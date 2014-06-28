@@ -16,4 +16,6 @@ public class DBmanager {
     public static HashMap<String, Plot> plots = new HashMap<String, Plot>();
     
     public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
+    
+    public static Theme curr;
 }
