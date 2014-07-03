@@ -29,12 +29,12 @@ public class Theme {
         Location ocent = DBmanager.curr.getCent();
         ocent.add(0, -1, 109);
         this.cent=ocent;
-        Generate();
+        this.Generate();
     }
     public Theme(String name, Location loc){
         this.theme = name;
-        this.cent = loc;
-        Generate();
+        this.cent = loc.add(0 , -1, 0);
+        this.Generate();
     }
     private void Generate(){
         Location loc = cent;
@@ -44,15 +44,15 @@ public class Theme {
                 lc.getBlock().setType(Material.SANDSTONE);
             }
         }
-        genPlots(true);
+        this.genPlots(true);
     
     }
     private void genPlots(boolean first){
         if(first){
-            Plot p1 = new Plot(cent.add(3,0,-3), 1);
-            Plot p2 = new Plot(cent.add(3,0,3), 2);
-            Plot p3 = new Plot(cent.add(-3,0,3), 3);
-            Plot p4 = new Plot(cent.add(-3,0,-3), 4);
+            Plot p1 = new Plot(new Location(cent.getWorld(), cent.getBlockX()+3, cent.getBlockY(), cent.getBlockZ()+3), 1);
+            Plot p2 = new Plot(new Location(cent.getWorld(), cent.getBlockX()-3, cent.getBlockY(), cent.getBlockZ()+3), 2);
+            Plot p3 = new Plot(new Location(cent.getWorld(), cent.getBlockX()+3, cent.getBlockY(), cent.getBlockZ()-3), 4);
+            Plot p4 = new Plot(new Location(cent.getWorld(), cent.getBlockX()-3, cent.getBlockY(), cent.getBlockZ()-3), 3);
         }
     }
 }

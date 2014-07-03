@@ -32,6 +32,7 @@ public class Create implements CommandExecutor{
                 }
                 Theme theme = new Theme(tname);
                 DBmanager.Themes.put(tname, theme);
+                return true;
             }else if(args[0].equalsIgnoreCase("set")){
                 //set and generate a theme with player at center
                 String tname = "";
@@ -42,6 +43,7 @@ public class Create implements CommandExecutor{
                 }
                 Theme theme = new Theme(tname, p.getLocation());
                 DBmanager.Themes.put(tname, theme);
+                return true;
             }
         }
         return false;
