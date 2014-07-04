@@ -15,17 +15,16 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class Freebuild extends JavaPlugin{
     @Getter
-    private Freebuild PluginInstance;
+    private static Freebuild PluginInstance;
     
     @Override
     public void onEnable(){
         PluginInstance = this;
         getCommand("Theme").setExecutor(new Create());
-        this.getLogger().info("Running");
     }
     
     @Override
     public void onDisable(){
-        this.getLogger().info("Ending");
+        DBmanager.save();
     }
 }

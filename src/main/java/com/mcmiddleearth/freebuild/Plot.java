@@ -6,6 +6,7 @@
 
 package com.mcmiddleearth.freebuild;
                 
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,16 +17,22 @@ import org.bukkit.entity.Player;
  * @author Donovan
  */
 public class Plot {
+    @Getter
     private Player p;
-    private int y;
+    @Getter
+    private boolean assigned;
+    @Getter
+    private Location corner;
     private int Boundz[] = {0,0};
     private int Boundx[] = {0,0};
+    @Getter
     private int rotation;
     private World w;
     
     public Plot(Location corner, int rot){
-        this.y = corner.getBlockY();
-        corner.add(0, 2, 0).getBlock().setType(Material.BRICK);
+        assigned = false;
+        this.corner = new Location(corner.getWorld(), corner.getX(), corner.getY(), corner.getZ());
+//        corner.add(0, 2, 0).getBlock().setType(Material.BRICK);
         if(rot == 1){
             this.Boundz[0]=corner.getBlockZ();
             this.Boundz[1]=corner.getBlockZ()+50;
@@ -53,29 +60,33 @@ public class Plot {
     }
     private void Generate(){
             for(int x = Boundx[0]; x < Boundx[1]; x++){
-                Location lc = new Location(w, x, this.y, Boundz[0]);
+                Location lc = new Location(w, x, corner.getBlockY(), Boundz[0]);
                 lc.getBlock().setType(Material.DIAMOND_BLOCK);
             }
             for(int x = Boundx[0]; x < Boundx[1]; x++){
-                Location lc = new Location(w, x, this.y, Boundz[1]);
+                Location lc = new Location(w, x, corner.getBlockY(), Boundz[1]);
                 lc.getBlock().setType(Material.DIAMOND_BLOCK);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
-                Location lc = new Location(w, Boundx[0], this.y, z);
+                Location lc = new Location(w, Boundx[0], corner.getBlockY(), z);
                 lc.getBlock().setType(Material.DIAMOND_BLOCK);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
-                Location lc = new Location(w, Boundx[1], this.y, z);
+                Location lc = new Location(w, Boundx[1], corner.getBlockY(), z);
                 lc.getBlock().setType(Material.DIAMOND_BLOCK);
             }
+            new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DIAMOND_BLOCK);
     }
     public void assign(Player p){
         this. p = p;
-        switch(rotation){
-            case 1:
-                Location lc = new Location(w, Boundx[0]+1, this.y+1, Boundz[0]);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
-                lc.add(0 , 0, 1).getBlock().setType(Material.SIGN);
+        assigned = true;
+        DBmanager.curr.getPlots().put(p.getName(), this);
+        if(rotation == 1 || rotation == 4){
+            new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
+            new Location(w, corner.getBlockX()+1, corner.getBlockY()+2, corner.getBlockZ()).getBlock().setType(Material.SIGN_POST);
+        }else if(rotation == 2 || rotation == 3){
+            new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
+            new Location(w, corner.getBlockX()-1, corner.getBlockY()+2, corner.getBlockZ()).getBlock().setType(Material.SIGN_POST);
         }
         
     }
