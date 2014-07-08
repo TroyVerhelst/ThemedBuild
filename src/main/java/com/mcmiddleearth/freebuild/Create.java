@@ -71,7 +71,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 type = args[0];
                 ploc = p.getLocation();
                 conversationFactory.buildConversation((Conversable) sender).begin();
-                p.teleport(DBmanager.curr.getCent());
+//                p.teleport(DBmanager.curr.getCent());
                 return true;
             }
 //            else if(args[0].equalsIgnoreCase("set")){
