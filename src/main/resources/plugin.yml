@@ -3,6 +3,10 @@ main: com.mcmiddleearth.freebuild.Freebuild
 version: 0.1
 description: Freebuild controler
 commands:
-  new:
-    description: new plot
-    usage: /new
+  theme:
+    description: new plot(s)
+    usage: |
+            /theme new
+            /theme set
+            /theme
+    

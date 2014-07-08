@@ -6,6 +6,7 @@
 
 package com.mcmiddleearth.freebuild;
 
+import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -13,13 +14,17 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author Donovan
  */
 public class Freebuild extends JavaPlugin{
+    @Getter
+    private static Freebuild PluginInstance;
+    
     @Override
     public void onEnable(){
-        this.getLogger().info("Running");
+        PluginInstance = this;
+        getCommand("Theme").setExecutor(new Create());
     }
     
     @Override
     public void onDisable(){
-        this.getLogger().info("Ending");
+        DBmanager.save();
     }
 }
