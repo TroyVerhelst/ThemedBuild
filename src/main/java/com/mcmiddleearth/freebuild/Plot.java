@@ -7,14 +7,16 @@
 package com.mcmiddleearth.freebuild;
                 
 import lombok.Getter;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.block.Sign;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 /**
  *
- * @author Donovan
+ * @author Donovan, aaldim
  */
 public class Plot {
     @Getter
@@ -28,6 +30,7 @@ public class Plot {
     @Getter
     private int rotation;
     private World w;
+    Block plotsign;
     
     public Plot(Location corner, int rot){
         assigned = false;
@@ -83,12 +86,17 @@ public class Plot {
         DBmanager.curr.getPlots().put(p.getName(), this);
         if(rotation == 1 || rotation == 4){
             new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
-            new Location(w, corner.getBlockX()+1, corner.getBlockY()+2, corner.getBlockZ()).getBlock().setType(Material.SIGN_POST);
+            plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+2, corner.getBlockZ()).getBlock();
+            plotsign.setType(Material.SIGN_POST);
+    
         }else if(rotation == 2 || rotation == 3){
             new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
-            new Location(w, corner.getBlockX()-1, corner.getBlockY()+2, corner.getBlockZ()).getBlock().setType(Material.SIGN_POST);
+            plotsign = new Location(w, corner.getBlockX()-1, corner.getBlockY()+2, corner.getBlockZ()).getBlock(); 
+            plotsign.setType(Material.SIGN_POST);    
         }
-        
+            Sign plotSign = (Sign)plotsign.getState();
+            plotSign.setLine(0, "[ThemedBuild]");
+            plotSign.setLine(1, DBmanager.curr.getTheme());
+            plotSign.update();
     }
-    
 }
