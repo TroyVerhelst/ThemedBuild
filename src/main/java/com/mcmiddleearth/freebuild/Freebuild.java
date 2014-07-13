@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  *
- * @author Donovan
+ * @author Donovan, aaldim
  */
 public class Freebuild extends JavaPlugin{
     @Getter
@@ -21,6 +21,8 @@ public class Freebuild extends JavaPlugin{
     public void onEnable(){
         PluginInstance = this;
         getCommand("Theme").setExecutor(new Create());
+        getServer().getPluginManager().registerEvents(new Protection(), this);
+         
     }
     
     @Override

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.block.Sign;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.ChatColor;
 
 /**
  *
@@ -95,8 +96,9 @@ public class Plot {
             plotsign.setType(Material.SIGN_POST);    
         }
             Sign plotSign = (Sign)plotsign.getState();
-            plotSign.setLine(0, "[ThemedBuild]");
-            plotSign.setLine(1, DBmanager.curr.getTheme());
+            plotSign.setLine(0, ChatColor.RED + "[ThemedBuild]");
+            plotSign.setLine(1, ChatColor.AQUA + DBmanager.curr.getTheme());
+            plotSign.setLine(2, ChatColor.GREEN + p.getName());
             plotSign.update();
     }
 }
