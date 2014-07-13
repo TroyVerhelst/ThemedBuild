@@ -66,28 +66,39 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         return true;
                     }
                 }
-            }else if(args[0].equalsIgnoreCase("new")||args[0].equalsIgnoreCase("set")){
+            }else if(args[0].equalsIgnoreCase("new")){
                 //create new theme
-                type = args[0];
-                ploc = p.getLocation();
-                conversationFactory.buildConversation((Conversable) sender).begin();
-//                p.teleport(DBmanager.curr.getCent());
+                p.sendMessage("Generating...");
+                String tname = "";
+                for(String s : args){
+                    if(!s.equalsIgnoreCase("new")){
+                        tname += s + " ";
+                    }
+                }
+                Theme theme = new Theme(tname, " ");
+                DBmanager.Themes.put(tname, theme);
+                DBmanager.curr = theme;
+                p.teleport(theme.getCent());
+//                type = args[0];
+//                ploc = p.getLocation();
+//                conversationFactory.buildConversation((Conversable) sender).begin();
+////                p.teleport(DBmanager.curr.getCent());
                 return true;
             }
-//            else if(args[0].equalsIgnoreCase("set")){
-//                //set and generate a theme with player at center
-//                p.sendMessage("Generating...");
-//                String tname = "";
-//                for(String s : args){
-//                    if(!s.equalsIgnoreCase("set")){
-//                        tname += s + " ";
-//                    }
-//                }
-//                Theme theme = new Theme(tname, p.getLocation());
-//                DBmanager.Themes.put(tname, theme);
-//                DBmanager.curr = theme;
-//                return true;
-//            }
+            else if(args[0].equalsIgnoreCase("set")){
+                //set and generate a theme with player at center
+                p.sendMessage("Generating...");
+                String tname = "";
+                for(String s : args){
+                    if(!s.equalsIgnoreCase("set")){
+                        tname += s + " ";
+                    }
+                }
+                Theme theme = new Theme(tname, " ", p.getLocation());
+                DBmanager.Themes.put(tname, theme);
+                DBmanager.curr = theme;
+                return true;
+            }
         }
         return false;
     }
