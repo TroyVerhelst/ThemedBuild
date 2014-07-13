@@ -6,6 +6,7 @@
 
 package com.mcmiddleearth.freebuild;
                 
+import java.util.Arrays;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -26,8 +27,8 @@ public class Plot {
     private boolean assigned;
     @Getter
     private Location corner;
-    private int Boundz[] = {0,0};
-    private int Boundx[] = {0,0};
+    public int Boundz[] = {0,0};
+    public int Boundx[] = {0,0};
     @Getter
     private int rotation;
     private World w;
@@ -85,6 +86,10 @@ public class Plot {
         this. p = p;
         assigned = true;
         DBmanager.curr.getPlots().put(p.getName(), this);
+        if(DBmanager.plots.containsKey(p.getName()))
+            DBmanager.plots.get(p.getName()).add(this);
+        else
+            DBmanager.plots.put(p.getName(), Arrays.asList(new Plot[] {this}));
         if(rotation == 1 || rotation == 4){
             new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
             plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+2, corner.getBlockZ()).getBlock();

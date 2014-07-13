@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Location;
@@ -20,7 +21,7 @@ import org.bukkit.Location;
  * @author Donovan
  */
 public class DBmanager {
-    public static HashMap<String, Plot> plots = new HashMap<String, Plot>();
+    public static HashMap<String, List<Plot>> plots = new HashMap<String, List<Plot>>();
     
     public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
     
