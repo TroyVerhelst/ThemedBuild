@@ -7,6 +7,8 @@
 package com.mcmiddleearth.freebuild;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -22,7 +24,6 @@ public class Freebuild extends JavaPlugin{
         PluginInstance = this;
         getCommand("Theme").setExecutor(new Create());
         getServer().getPluginManager().registerEvents(new Protection(), this);
-         
     }
     
     @Override

@@ -6,15 +6,17 @@
 
 package com.mcmiddleearth.freebuild;
                 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import lombok.Getter;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.block.Sign;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.ChatColor;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -31,6 +33,7 @@ public class Plot {
     public int Boundx[] = {0,0};
     @Getter
     private int rotation;
+    @Getter
     private World w;
     Block plotsign;
     
@@ -86,10 +89,15 @@ public class Plot {
         this. p = p;
         assigned = true;
         DBmanager.curr.getPlots().put(p.getName(), this);
-        if(DBmanager.plots.containsKey(p.getName()))
-            DBmanager.plots.get(p.getName()).add(this);
-        else
-            DBmanager.plots.put(p.getName(), Arrays.asList(new Plot[] {this}));
+        if(DBmanager.plots.containsKey(p.getName())){
+            ArrayList<Plot> ps = DBmanager.plots.get(p.getName());
+            ps.add(this);
+            DBmanager.plots.put(p.getName(), ps);
+        }else{
+            ArrayList<Plot> ps = new ArrayList<Plot>();
+            ps.add(this);
+            DBmanager.plots.put(p.getName(), ps);
+        }
         if(rotation == 1 || rotation == 4){
             new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
             plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+2, corner.getBlockZ()).getBlock();
