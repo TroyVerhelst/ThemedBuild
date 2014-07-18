@@ -9,4 +9,11 @@ commands:
             /theme new
             /theme set
             /theme
+permissions:
+  plotmanager.create:
+    default: op
+    children:
+        plotmanager.build: true
+  plotmanager.build:
+    default: true
     

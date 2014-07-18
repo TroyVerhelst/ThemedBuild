@@ -66,7 +66,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         return true;
                     }
                 }
-            }else if(args[0].equalsIgnoreCase("new")){
+            }else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
                 //create new theme
                 p.sendMessage("Generating...");
                 String tname = "";
@@ -77,6 +77,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 }
                 Theme theme = new Theme(tname, " ");
                 DBmanager.Themes.put(tname, theme);
+                DBmanager.curr.close();
                 DBmanager.curr = theme;
                 p.teleport(theme.getCent());
 //                type = args[0];
@@ -85,7 +86,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 ////                p.teleport(DBmanager.curr.getCent());
                 return true;
             }
-            else if(args[0].equalsIgnoreCase("set")){
+            else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create")){
                 //set and generate a theme with player at center
                 p.sendMessage("Generating...");
                 String tname = "";
