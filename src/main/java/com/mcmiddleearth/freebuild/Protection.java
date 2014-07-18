@@ -12,19 +12,23 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Painting;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 /**
  *
  * @author Donovan, aaldim
  */
 public final class Protection implements Listener{
-  
+    
+    boolean canBuild;
+    
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.isCancelled())
@@ -44,10 +48,10 @@ public final class Protection implements Listener{
                 }
             }
 
-            }
+        }
 
         Location ploc=b.getLocation();
-        boolean canBuild = false;
+        canBuild = false;
         if(DBmanager.plots.containsKey(p.getName())){
             List<Plot> pPlots = DBmanager.plots.get(p.getName());
             for(Plot plot : pPlots){
@@ -66,7 +70,7 @@ public final class Protection implements Listener{
         Player p = e.getPlayer();
         Block b = e.getBlock();
         Location ploc=b.getLocation();
-        boolean canBuild = false;
+        canBuild = false;
         if(DBmanager.plots.containsKey(p.getName())){
             List<Plot> pPlots = DBmanager.plots.get(p.getName());
             for(Plot plot : pPlots){
@@ -76,6 +80,21 @@ public final class Protection implements Listener{
         if(!canBuild){
             if(!p.hasPermission("plotmanager.create"))
                 e.setCancelled(true);
+        }
+    }
+    @EventHandler
+    public void onHangingBreak(HangingBreakByEntityEvent e)
+    {       
+        HangingBreakByEntityEvent entityEvent = (HangingBreakByEntityEvent) e;
+        Entity removerEntity = entityEvent.getRemover();
+        Player p = (Player) removerEntity;
+        
+        if(!canBuild){
+            if(!p.hasPermission("plotmanager.create")) {
+                if(e.getEntity() instanceof Painting || e.getEntity() instanceof ItemFrame) {
+                    e.setCancelled(true);
+                }
+            }
         }
     }
 }
