@@ -22,12 +22,16 @@ public class Freebuild extends JavaPlugin{
     @Override
     public void onEnable(){
         PluginInstance = this;
+        this.saveDefaultConfig();
         getCommand("Theme").setExecutor(new Create());
         getServer().getPluginManager().registerEvents(new Protection(), this);
+        getServer().getPluginManager().registerEvents(new DBmanager(), this);
+        DBmanager.loadAll();
     }
     
     @Override
     public void onDisable(){
         DBmanager.save();
+
     }
 }

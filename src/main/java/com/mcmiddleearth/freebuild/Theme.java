@@ -23,7 +23,7 @@ public class Theme {
     @Getter
     private Location cent;
     @Getter
-    private HashMap<String, Plot> plots = new HashMap<String, Plot>();
+    private ArrayList<Plot> plots = new ArrayList<Plot>();
     @Getter
     private ArrayList<Plot> currplots = new ArrayList<Plot>();
     @Getter
@@ -42,6 +42,14 @@ public class Theme {
         this.theme = name;
         this.cent = loc.add(0 , -1, 0);
         this.Generate();
+    }
+    public Theme(String name, Location loc, ArrayList<Plot> plotz, ArrayList<Plot> currs, int xl, int xr){
+        this.theme = name;
+        this.cent = loc.add(0 , -1, 0);
+        this.plots.addAll(plotz);
+        this.currplots.addAll(currs);
+        this.x_left = xl;
+        this.x_right = xr;
     }
     private void Generate(){
         Location loc = cent;
@@ -83,6 +91,10 @@ public class Theme {
         currplots.add(p2);
         currplots.add(p3);
         currplots.add(p4);
+        plots.add(p1);
+        plots.add(p2);
+        plots.add(p3);
+        plots.add(p4);
         for(int z = cent.getBlockZ()-1; z<cent.getBlockZ()+2; z++){
             for(int x = p1.getCorner().getBlockX()-1; x<p1.getCorner().getBlockX()+54; x++){
                 new Location(cent.getWorld(), x, cent.getBlockY(), z).getBlock().setType(Material.SANDSTONE);
