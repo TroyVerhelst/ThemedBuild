@@ -26,9 +26,8 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
  * @author Donovan, aaldim
  */
 public final class Protection implements Listener{
-    
     boolean canBuild;
-    
+    //on relog cant build
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.isCancelled())
@@ -59,7 +58,7 @@ public final class Protection implements Listener{
             }
         }
         if(!canBuild){
-            if(!p.hasPermission("plotmanager.create"))
+//            if(!p.hasPermission("plotmanager.create"))
                 event.setCancelled(true);
         }
     }
@@ -78,7 +77,7 @@ public final class Protection implements Listener{
             }
         }
         if(!canBuild){
-            if(!p.hasPermission("plotmanager.create"))
+//            if(!p.hasPermission("plotmanager.create"))
                 e.setCancelled(true);
         }
     }

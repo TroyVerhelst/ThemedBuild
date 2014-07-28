@@ -15,5 +15,5 @@ permissions:
     children:
         plotmanager.build: true
   plotmanager.build:
-    default: true
+    default: false
     

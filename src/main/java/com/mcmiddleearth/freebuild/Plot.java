@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
  */
 public class Plot {
     @Getter
-    private Player p;
+    private String p;
     @Getter
     private boolean assigned;
     @Getter
@@ -66,6 +66,38 @@ public class Plot {
         this.rotation = rot;
         Generate();
     }
+    public Plot(Location corner, int rot, boolean assigned, String owner){
+        assigned = false;
+        this.corner = new Location(corner.getWorld(), corner.getX(), corner.getY(), corner.getZ());
+//        corner.add(0, 2, 0).getBlock().setType(Material.BRICK);
+        if(rot == 1){
+            this.Boundz[0]=corner.getBlockZ();
+            this.Boundz[1]=corner.getBlockZ()+50;
+            this.Boundx[0]=corner.getBlockX();
+            this.Boundx[1]=corner.getBlockX()+50;
+        }else if(rot == 2){
+            this.Boundz[0]=corner.getBlockZ();
+            this.Boundz[1]=corner.getBlockZ()+50;
+            this.Boundx[0]=corner.getBlockX()-50;
+            this.Boundx[1]=corner.getBlockX();
+        }else if(rot == 3){
+            this.Boundz[0]=corner.getBlockZ()-50;
+            this.Boundz[1]=corner.getBlockZ();
+            this.Boundx[0]=corner.getBlockX()-50;
+            this.Boundx[1]=corner.getBlockX();
+        }else if(rot == 4){
+            this.Boundz[0]=corner.getBlockZ()-50;
+            this.Boundz[1]=corner.getBlockZ();
+            this.Boundx[0]=corner.getBlockX();
+            this.Boundx[1]=corner.getBlockX()+50;
+        }
+        this.w = corner.getWorld();
+        this.rotation = rot;
+        this.assigned = assigned;
+        if(assigned){
+            this.p = owner;
+        }
+    }
     private void Generate(){
             for(int x = Boundx[0]; x < Boundx[1]; x++){
                 Location lc = new Location(w, x, corner.getBlockY(), Boundz[0]);
@@ -86,9 +118,10 @@ public class Plot {
             new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DIAMOND_BLOCK);
     }
     public void assign(Player p){
-        this. p = p;
+        DBmanager.curr.getCurrplots().remove(this);
+        this.p = p.getName();
         assigned = true;
-        DBmanager.curr.getPlots().put(p.getName(), this);
+//        DBmanager.curr.getPlots().put(p.getName(), this);
         if(DBmanager.plots.containsKey(p.getName())){
             ArrayList<Plot> ps = DBmanager.plots.get(p.getName());
             ps.add(this);
