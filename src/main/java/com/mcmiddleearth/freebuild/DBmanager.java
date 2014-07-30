@@ -83,7 +83,7 @@ public class DBmanager implements Listener{
                 s = new Scanner(f);
                 String line = s.nextLine();
                 List<String> items = Arrays.asList(line.split("\\s*,\\s*"));
-                Location cent = new Location(Bukkit.getWorld(items.get(0)), Integer.parseInt(items.get(1)), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3)));
+                Location cent = new Location(Bukkit.getWorld(items.get(0)), Integer.parseInt(items.get(1)), Integer.parseInt(items.get(2))+1, Integer.parseInt(items.get(3)));
                 int xl = Integer.parseInt(s.nextLine());
                 int xr = Integer.parseInt(s.nextLine());
                 s.nextLine();
@@ -97,7 +97,7 @@ public class DBmanager implements Listener{
                     String type = items.get(5);
                     boolean assigned;
                     String owner = null;
-                    System.out.print(type);
+//                    System.out.print(type);
                     if(type.equalsIgnoreCase("#curr#")){
                         assigned = false;
                     }else{
@@ -121,10 +121,10 @@ public class DBmanager implements Listener{
                     }
                 }
                 Theme t = new Theme(name, cent, plotz, currplotz, xl, xr);
-//                String curr1 = Freebuild.getPluginInstance().getConfig().getString("currTheme");
-//                if(t.getTheme().equalsIgnoreCase(curr1)){
-                DBmanager.curr = t;
-//                }
+                String curr1 = Freebuild.getPluginInstance().getConfig().getString("currTheme");
+                if(t.getTheme().equalsIgnoreCase(curr1)){
+                    DBmanager.curr = t;
+                }
                 DBmanager.Themes.put(t.getTheme(), t);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(DBmanager.class.getName()).log(Level.SEVERE, null, ex);
