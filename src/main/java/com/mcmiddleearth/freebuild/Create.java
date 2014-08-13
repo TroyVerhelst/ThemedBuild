@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationAbandonedListener;
 import org.bukkit.conversations.ConversationContext;
@@ -50,7 +49,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 //move the player and gen new plot
                 for(Plot plot : DBmanager.curr.getCurrplots()){
                     if(!plot.isAssigned()){
-                        p.sendMessage(p.getLocation().toString());
+//                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.teleport(new Location(plot.getCorner().getWorld(), plot.getCorner().getBlockX(), plot.getCorner().getBlockY()+2, plot.getCorner().getBlockZ()));
                         p.sendMessage("Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
