@@ -29,7 +29,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 /**
  *
- * @author Donovan, aaldim
+ * @author Donovan, aaldim, Ivan1pl
  */
 public final class Protection implements Listener{
     boolean canBuild;
