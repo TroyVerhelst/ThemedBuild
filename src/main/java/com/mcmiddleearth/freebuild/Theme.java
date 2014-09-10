@@ -12,10 +12,14 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.material.Stairs;
 
 /**
  *
- * @author Donovan
+ * @author Donovan, Ivan1pl
  */
 public class Theme {
     @Getter
@@ -53,11 +57,27 @@ public class Theme {
     }
     private void Generate(){
         Location loc = cent;
-        for(int x = loc.getBlockX()-1; x<loc.getBlockX() + 2; x++){
-            for(int z = loc.getBlockZ()-56; z<loc.getBlockZ()+57; z++){
+        BlockState state;
+        Stairs stairs;
+        for(int z = loc.getBlockZ()-56; z<loc.getBlockZ()+57; z++){
+            for(int x = loc.getBlockX()-1; x<loc.getBlockX() + 2; x++){
                 Location lc = new Location(loc.getWorld(), x, loc.getBlockY(), z);
                 lc.getBlock().setType(Material.SANDSTONE);
             }
+            Location lc = new Location(loc.getWorld(), loc.getBlockX()-2, loc.getBlockY(), z);
+            lc.getBlock().setType(Material.BRICK_STAIRS);
+            state = lc.getBlock().getState();
+            stairs = (Stairs) state.getData();
+            stairs.setFacingDirection(BlockFace.WEST);
+            state.setData(stairs);
+            state.update(true);
+            lc = new Location(loc.getWorld(), loc.getBlockX()+2, loc.getBlockY(), z);
+            lc.getBlock().setType(Material.BRICK_STAIRS);
+            state = lc.getBlock().getState();
+            stairs = (Stairs) state.getData();
+            stairs.setFacingDirection(BlockFace.EAST);
+            state.setData(stairs);
+            state.update(true);
         }
         this.genPlots(true);
     }
@@ -69,7 +89,10 @@ public class Theme {
         Plot p1;
         Plot p2;
         Plot p3;
-        Plot p4;     
+        Plot p4;
+        Block b;
+        BlockState state;
+        Stairs stairs;
         if(first){
 //            Bukkit.getServer().broadcastMessage("1");
             p1 = new Plot(new Location(cent.getWorld(), cent.getBlockX()+3, cent.getBlockY()+1, cent.getBlockZ()+3), 1);
@@ -102,6 +125,38 @@ public class Theme {
             for(int x = p2.getCorner().getBlockX()+1; x>p2.getCorner().getBlockX()-54; x--){
                 new Location(cent.getWorld(), x, cent.getBlockY(), z).getBlock().setType(Material.SANDSTONE);
             }
+        }
+        for(int x = p1.getCorner().getBlockX()-1; x<p1.getCorner().getBlockX()+54; x++){
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()-2).getBlock();
+            b.setType(Material.BRICK_STAIRS);
+            state = b.getState();
+            stairs = (Stairs) state.getData();
+            stairs.setFacingDirection(BlockFace.NORTH);
+            state.setData(stairs);
+            state.update(true);
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()+2).getBlock();
+            b.setType(Material.BRICK_STAIRS);
+            state = b.getState();
+            stairs = (Stairs) state.getData();
+            stairs.setFacingDirection(BlockFace.SOUTH);
+            state.setData(stairs);
+            state.update(true);
+        }
+        for(int x = p2.getCorner().getBlockX()+1; x>p2.getCorner().getBlockX()-54; x--){
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()-2).getBlock();
+            b.setType(Material.BRICK_STAIRS);
+            state = b.getState();
+            stairs = (Stairs) state.getData();
+            stairs.setFacingDirection(BlockFace.NORTH);
+            state.setData(stairs);
+            state.update(true);
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()+2).getBlock();
+            b.setType(Material.BRICK_STAIRS);
+            state = b.getState();
+            stairs = (Stairs) state.getData();
+            stairs.setFacingDirection(BlockFace.SOUTH);
+            state.setData(stairs);
+            state.update(true);
         }
     }
 }
