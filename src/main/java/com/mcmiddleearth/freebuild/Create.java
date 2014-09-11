@@ -69,6 +69,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 //create new theme
                 p.sendMessage("Generating...");
                 String tname = "";
+                if(args.length == 1){
+                    return false;
+                }
                 for(String s : args){
                     if(!s.equalsIgnoreCase("new")){
                         tname += s + " ";
@@ -89,6 +92,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 //set and generate a theme with player at center
                 p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
+                if(args.length == 1){
+                    return false;
+                }
                 for(String s : args){
                     if(!s.equalsIgnoreCase("set")){
                         tname += s + " ";

@@ -6,8 +6,8 @@ commands:
   theme:
     description: new plot(s)
     usage: |
-            /theme new
-            /theme set
+            /theme new <name>
+            /theme set <name>
             /theme
 permissions:
   plotmanager.create:
