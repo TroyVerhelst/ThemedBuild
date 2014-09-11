@@ -101,21 +101,21 @@ public class Plot {
     private void Generate(){
             for(int x = Boundx[0]; x < Boundx[1]; x++){
                 Location lc = new Location(w, x, corner.getBlockY(), Boundz[0]);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             for(int x = Boundx[0]; x < Boundx[1]; x++){
                 Location lc = new Location(w, x, corner.getBlockY(), Boundz[1]);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
                 Location lc = new Location(w, Boundx[0], corner.getBlockY(), z);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
                 Location lc = new Location(w, Boundx[1], corner.getBlockY(), z);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
-            new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DIAMOND_BLOCK);
+            new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DOUBLE_STEP);
     }
     public void assign(Player p){
         DBmanager.curr.getCurrplots().remove(this);
