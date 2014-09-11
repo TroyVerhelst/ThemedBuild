@@ -22,7 +22,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -94,14 +93,6 @@ public final class Protection implements Listener{
         Player p = e.getPlayer();
         Block b = e.getBlock();
         blockPlaceProtect(b,p,e);
-    }
-    @EventHandler
-    public void onBlockMultiPlace(BlockMultiPlaceEvent e){
-        Player p = e.getPlayer();
-        List<BlockState> blocks = e.getReplacedBlockStates();
-        for(BlockState b: blocks){
-            blockPlaceProtect(b.getBlock(),p,e);
-        }
     }
     private boolean isInPlot(Block b){
         Location ploc=b.getLocation();
