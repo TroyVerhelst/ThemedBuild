@@ -38,7 +38,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 .withModality(true)
                 .withFirstPrompt(new setTitle())
                 .withTimeout(600)
-                .thatExcludesNonPlayersWithMessage("You must be a player to send this command");
+                .thatExcludesNonPlayersWithMessage(Freebuild.prefix + "You must be a player to send this command");
     }
     
     @Override
@@ -52,7 +52,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.teleport(new Location(plot.getCorner().getWorld(), plot.getCorner().getBlockX(), plot.getCorner().getBlockY()+2, plot.getCorner().getBlockZ()));
-                        p.sendMessage("Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         return true;
                     }
                 }
@@ -61,7 +61,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     if(!plot.isAssigned()){
                         plot.assign(p);
                         p.teleport(plot.getCorner());
-                        p.sendMessage("Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         return true;
                     }
                 }
@@ -87,7 +87,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
             }
             else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create")){
                 //set and generate a theme with player at center
-                p.sendMessage("Generating...");
+                p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
                 for(String s : args){
                     if(!s.equalsIgnoreCase("set")){
@@ -105,7 +105,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 
     @Override
     public void conversationAbandoned(ConversationAbandonedEvent cae) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(Freebuild.prefix + "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 class setTitle extends StringPrompt {
     @Override
