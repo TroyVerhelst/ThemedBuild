@@ -40,45 +40,64 @@ public class DBmanager implements Listener{
     
     private static File Plot_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
     
-    public static void save(){
+    public static int MaxPlotsPerPlayer;
+    
+    public static boolean InfinitePlotsPerPlayer;
+    
+    public static boolean BuildPastPlots;
+    
+    static{
         if(!Theme_dat.exists()){
             Theme_dat.mkdirs();
         }
-        File start = new File(Theme_dat + System.getProperty("file.separator") + curr.getTheme().replace(" ", "_") + ".MCtheme");
-        try {
-            FileWriter fr = new FileWriter(start.toString());
-            try (PrintWriter writer = new PrintWriter(fr)) {
-                writer.println(curr.getCent().getWorld().getName() + " , " + curr.getCent().getBlockX() + " , " + curr.getCent().getBlockY() + " , " + curr.getCent().getBlockZ());
-                //------
-                writer.println(curr.getX_left());
-                writer.println(curr.getX_right());
-                writer.println("Plots:");
-                System.out.println(curr.getPlots().toString());
-                for(Plot p : curr.getPlots()){
-                        String s = p.getCorner().getWorld().getName() + " , " + 
-                                   p.getCorner().getBlockX() + " , " + 
-                                   p.getCorner().getBlockY() + " , " + 
-                                   p.getCorner().getBlockZ() + " , " + 
-                                   p.getRotation();
-                                   if(curr.getCurrplots().contains(p)){
-                                       s += " , #curr#";
-                                   } else {
-                                       s += " , " + p.getP();
-                    }
-                        writer.println(s);
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(DBmanager.class.getName()).log(Level.SEVERE, null, ex);
+        if(!Plot_dat.exists()){
+            Plot_dat.mkdirs();
         }
-        Freebuild.getPluginInstance().getConfig().set("currTheme", curr.getTheme());
+    }
+    
+    public static void save(){
+        if(curr != null){
+            File start = new File(Theme_dat + System.getProperty("file.separator") + curr.getTheme().replace(" ", "_") + ".MCtheme");
+            try {
+                FileWriter fr = new FileWriter(start.toString());
+                try (PrintWriter writer = new PrintWriter(fr)) {
+                    writer.println(curr.getCent().getWorld().getName() + " , " + curr.getCent().getBlockX() + " , " + curr.getCent().getBlockY() + " , " + curr.getCent().getBlockZ());
+                    //------
+                    writer.println(curr.getX_left());
+                    writer.println(curr.getX_right());
+                    writer.println("Plots:");
+                    System.out.println(curr.getPlots().toString());
+                    for(Plot p : curr.getPlots()){
+                            String s = p.getCorner().getWorld().getName() + " , " + 
+                                       p.getCorner().getBlockX() + " , " + 
+                                       p.getCorner().getBlockY() + " , " + 
+                                       p.getCorner().getBlockZ() + " , " + 
+                                       p.getRotation();
+                                       if(curr.getCurrplots().contains(p)){
+                                           s += " , #curr#";
+                                       } else {
+                                           s += " , " + p.getP();
+                        }
+                            writer.println(s);
+                    }
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(DBmanager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Freebuild.getPluginInstance().getConfig().set("currTheme", curr.getTheme());
+        }
         Freebuild.getPluginInstance().saveConfig();
     }
     public static void loadAll(){
+        MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
+        InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
+        BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
             name = name.replace(".MCtheme", "");
             try {
+                String curr1 = Freebuild.getPluginInstance().getConfig().getString("currTheme");
+                boolean isCurrent = name.equalsIgnoreCase(curr1);
                 Scanner s;
                 s = new Scanner(f);
                 String line = s.nextLine();
@@ -108,7 +127,7 @@ public class DBmanager implements Listener{
                     plotz.add(p);
                     if(!assigned){
                         currplotz.add(p);
-                    }else{
+                    }else if(BuildPastPlots || isCurrent){
                         if(DBmanager.plots.containsKey(owner)){
                             ArrayList<Plot> ps = DBmanager.plots.get(owner);
                             ps.add(p);
@@ -121,7 +140,6 @@ public class DBmanager implements Listener{
                     }
                 }
                 Theme t = new Theme(name, cent, plotz, currplotz, xl, xr);
-                String curr1 = Freebuild.getPluginInstance().getConfig().getString("currTheme");
                 if(t.getTheme().equalsIgnoreCase(curr1)){
                     DBmanager.curr = t;
                 }

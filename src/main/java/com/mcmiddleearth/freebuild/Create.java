@@ -6,6 +6,9 @@
 
 package com.mcmiddleearth.freebuild;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
@@ -46,6 +49,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
         Player p = (Player) sender;
         if(cmd.getName().equalsIgnoreCase("theme")){
             if(args.length == 0){
+                if(!DBmanager.InfinitePlotsPerPlayer && DBmanager.plots.containsKey(p.getName())
+                        && DBmanager.MaxPlotsPerPlayer <= DBmanager.plots.get(p.getName()).size()){
+                    p.sendMessage(Freebuild.prefix + "You reached maximum number of plots");
+                    return true;
+                }
                 //move the player and gen new plot
                 for(Plot plot : DBmanager.curr.getCurrplots()){
                     if(!plot.isAssigned()){
@@ -72,15 +80,16 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 if(args.length == 1){
                     return false;
                 }
-                for(String s : args){
-                    if(!s.equalsIgnoreCase("new")){
-                        tname += s + " ";
-                    }
+                for(String s : Arrays.asList(args).subList(1, args.length)){
+                    tname += s + " ";
                 }
                 Theme theme = new Theme(tname, " ");
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr.close();
                 DBmanager.curr = theme;
+                if(!DBmanager.BuildPastPlots){
+                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                }
                 p.teleport(theme.getCent());
 //                type = args[0];
 //                ploc = p.getLocation();
@@ -95,14 +104,15 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 if(args.length == 1){
                     return false;
                 }
-                for(String s : args){
-                    if(!s.equalsIgnoreCase("set")){
-                        tname += s + " ";
-                    }
+                for(String s : Arrays.asList(args).subList(1, args.length)){
+                    tname += s + " ";
                 }
                 Theme theme = new Theme(tname, " ", p.getLocation());
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr = theme;
+                if(!DBmanager.BuildPastPlots){
+                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                }
                 return true;
             }
         }
