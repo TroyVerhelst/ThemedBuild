@@ -9,9 +9,11 @@ package com.mcmiddleearth.freebuild;
 import java.util.List;
 import java.util.Set;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
@@ -22,10 +24,15 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Bed;
+import org.bukkit.material.Dye;
 /**
  *
  * @author Donovan, aaldim, Ivan1pl
@@ -93,6 +100,37 @@ public final class Protection implements Listener{
         Player p = e.getPlayer();
         Block b = e.getBlock();
         blockPlaceProtect(b,p,e);
+        if(!e.isCancelled() && b.getType() == Material.BED_BLOCK){
+            b = b.getRelative(((Bed) b.getState().getData()).getFacing());
+            if(b.isEmpty()){
+                blockPlaceProtect(b,p,e);
+            }
+        }
+    }
+    @EventHandler
+    public void onPlayerInteractBlock(PlayerInteractEvent e){
+        if(e.hasItem() && !e.isCancelled()){
+            Block b = e.getClickedBlock();
+            Player p = e.getPlayer();
+            ItemStack item = e.getItem();
+            Material material = item.getType();
+            if(material == Material.INK_SACK && ((Dye) item.getData()).getColor() == DyeColor.WHITE && e.hasBlock()){
+                blockPlaceProtect(b,p,e);
+            }
+            else if(material == Material.WATER_BUCKET || material == Material.LAVA_BUCKET){
+                BlockFace face = e.getBlockFace();
+                blockPlaceProtect(b,p,e);
+                blockPlaceProtect(b.getRelative(face),p,e);
+            }
+            else if(material == Material.BUCKET){
+                if(b.getType() == Material.WATER || b.getType() == Material.LAVA){
+                    blockPlaceProtect(b,p,e);
+                }
+                else{
+                    e.setCancelled(true);
+                }
+            }
+        }
     }
     private boolean isInPlot(Block b){
         Location ploc=b.getLocation();
@@ -112,9 +150,10 @@ public final class Protection implements Listener{
     public void onPistonExtend(BlockPistonExtendEvent e){
         if(e.isCancelled())
             return;
+        BlockFace face = e.getDirection();
         List<Block> blocks = e.getBlocks();
         for(Block b: blocks){
-            if(!isInPlot(b)){
+            if(!isInPlot(b) || !isInPlot(b.getRelative(face))){
                 e.setCancelled(true);
                 return;
             }
@@ -126,6 +165,13 @@ public final class Protection implements Listener{
             return;
         Block b = e.getRetractLocation().getBlock();
         if(!b.isEmpty() && !isInPlot(b)){
+            e.setCancelled(true);
+        }
+    }
+    @EventHandler
+    public void onBlockFromTo(BlockFromToEvent e){
+        Block b = e.getToBlock();
+        if(!isInPlot(b)){
             e.setCancelled(true);
         }
     }
