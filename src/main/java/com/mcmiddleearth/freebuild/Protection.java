@@ -29,6 +29,8 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
@@ -109,26 +111,37 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerInteractBlock(PlayerInteractEvent e){
-        if(e.hasItem() && !e.isCancelled()){
+        if(e.hasItem() && !e.isCancelled() && e.hasBlock()){
             Block b = e.getClickedBlock();
             Player p = e.getPlayer();
             ItemStack item = e.getItem();
             Material material = item.getType();
-            if(material == Material.INK_SACK && ((Dye) item.getData()).getColor() == DyeColor.WHITE && e.hasBlock()){
+            if(material == Material.INK_SACK && ((Dye) item.getData()).getColor() == DyeColor.WHITE){
                 blockPlaceProtect(b,p,e);
             }
-            else if(material == Material.WATER_BUCKET || material == Material.LAVA_BUCKET){
-                BlockFace face = e.getBlockFace();
+        }
+    }
+    @EventHandler
+    public void onPlayerEmpyBucket(PlayerBucketEmptyEvent e){
+        BlockFace face = e.getBlockFace();
+        Block b = e.getBlockClicked();
+        Player p = e.getPlayer();
+        blockPlaceProtect(b.getRelative(face),p,e);
+    }
+    @EventHandler
+    public void onPlayerFillBucket(PlayerBucketFillEvent e){
+        if(!e.isCancelled()){
+            Block b = e.getBlockClicked();
+            BlockFace face = e.getBlockFace();
+            Player p = e.getPlayer();
+            if(b.getType() == Material.WATER || b.getType() == Material.LAVA){
                 blockPlaceProtect(b,p,e);
-                blockPlaceProtect(b.getRelative(face),p,e);
-            }
-            else if(material == Material.BUCKET){
-                if(b.getType() == Material.WATER || b.getType() == Material.LAVA){
-                    blockPlaceProtect(b,p,e);
-                }
-                else{
+                if(!e.isCancelled()){
+                    b.setType(Material.AIR);
                     e.setCancelled(true);
                 }
+            }else{
+                blockPlaceProtect(b.getRelative(face),p,e);
             }
         }
     }
