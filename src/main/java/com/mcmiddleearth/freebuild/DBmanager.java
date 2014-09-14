@@ -38,6 +38,8 @@ public class DBmanager implements Listener{
     
     public static Theme curr;
     
+    public static PlotModel currModel;
+    
     private static final File Theme_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
     
     private static final File Plot_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
@@ -54,6 +56,8 @@ public class DBmanager implements Listener{
         }
         if(!Plot_dat.exists()){
             Plot_dat.mkdirs();
+            File out = new File(Plot_dat + System.getProperty("file.separator") + "default.MCplot");
+            PlotModel.generateDefaultModel(out);
         }
     }
     
@@ -67,20 +71,23 @@ public class DBmanager implements Listener{
                     //------
                     writer.println(curr.getX_left());
                     writer.println(curr.getX_right());
+                    writer.println(curr.getModel());
                     writer.println("Plots:");
                     System.out.println(curr.getPlots().toString());
                     for(Plot p : curr.getPlots()){
-                            String s = p.getCorner().getWorld().getName() + " , " + 
-                                       p.getCorner().getBlockX() + " , " + 
-                                       p.getCorner().getBlockY() + " , " + 
-                                       p.getCorner().getBlockZ() + " , " + 
-                                       p.getRotation();
-                                       if(curr.getCurrplots().contains(p)){
-                                           s += " , #curr#";
-                                       } else {
-                                           s += " , " + p.getP();
+                        String s = p.getCorner().getWorld().getName() + " , " + 
+                                   p.getCorner().getBlockX() + " , " + 
+                                   p.getCorner().getBlockY() + " , " + 
+                                   p.getCorner().getBlockZ() + " , " + 
+                                   p.getRotation() + " , " +
+                                   p.getSizeX() + " , " +
+                                   p.getSizeZ();
+                        if(curr.getCurrplots().contains(p)){
+                            s += " , #curr#";
+                        } else {
+                            s += " , " + p.getP();
                         }
-                            writer.println(s);
+                        writer.println(s);
                     }
                 }
             } catch (IOException ex) {
@@ -116,6 +123,7 @@ public class DBmanager implements Listener{
                 Location cent = new Location(Bukkit.getWorld(items.get(0)), Integer.parseInt(items.get(1)), Integer.parseInt(items.get(2))+1, Integer.parseInt(items.get(3)));
                 int xl = Integer.parseInt(s.nextLine());
                 int xr = Integer.parseInt(s.nextLine());
+                String model = s.nextLine();
                 s.nextLine();
                 ArrayList<Plot> plotz = new ArrayList<Plot>();
                 ArrayList<Plot> currplotz = new ArrayList<Plot>();
@@ -124,7 +132,9 @@ public class DBmanager implements Listener{
                     items = Arrays.asList(line.split("\\s*,\\s*"));
                     Location corner = new Location(Bukkit.getWorld(items.get(0)), Integer.parseInt(items.get(1)), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3)));
                     int rotation = Integer.parseInt(items.get(4));
-                    String type = items.get(5);
+                    int sx = Integer.parseInt(items.get(5));
+                    int sz = Integer.parseInt(items.get(6));
+                    String type = items.get(7);
                     boolean assigned;
                     String owner = null;
 //                    System.out.print(type);
@@ -134,7 +144,7 @@ public class DBmanager implements Listener{
                         assigned = true;
                         owner = type;
                     }
-                    Plot p =  new Plot(corner, rotation, assigned, owner);
+                    Plot p =  new Plot(corner, rotation, assigned, owner, sx, sz);
                     plotz.add(p);
                     if(!assigned){
                         currplotz.add(p);
@@ -150,9 +160,10 @@ public class DBmanager implements Listener{
                         }
                     }
                 }
-                Theme t = new Theme(name, cent, plotz, currplotz, xl, xr);
+                Theme t = new Theme(name, cent, plotz, currplotz, xl, xr, model);
                 if(t.getTheme().equalsIgnoreCase(curr1)){
                     DBmanager.curr = t;
+                    currModel = loadPlotModel(model);
                 }
                 DBmanager.Themes.put(t.getTheme(), t);
             } catch (FileNotFoundException ex) {

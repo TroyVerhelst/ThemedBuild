@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -28,8 +29,10 @@ public class PlotModel {
     @Getter
     private final String name;
     private ItemStack[][][] model;
+    @Getter
     private int sizex;
     private int sizey;
+    @Getter
     private int sizez;
     private Location point1 = null;
     private Location point2 = null;
@@ -53,6 +56,8 @@ public class PlotModel {
                     }
                 }
             }
+            stream.close();
+            fis.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException | ClassNotFoundException ex) {
@@ -98,6 +103,8 @@ public class PlotModel {
                     }
                 }
             }
+            stream.close();
+            fos.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -117,6 +124,28 @@ public class PlotModel {
                     state.update(true);
                 }
             }
+        }
+    }
+    public static void generateDefaultModel(File out){
+        try {
+            FileOutputStream fos = new FileOutputStream(out);
+            BukkitObjectOutputStream stream = new BukkitObjectOutputStream(fos);
+            stream.writeInt(48);
+            stream.writeInt(1);
+            stream.writeInt(48);
+            for(int x = 0; x < 48; ++x){
+                for(int y = 0; y < 1; ++y){
+                    for(int z = 0; z < 48; ++z){
+                        stream.writeObject(new ItemStack(Material.GRASS));
+                    }
+                }
+            }
+            stream.close();
+            fos.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
