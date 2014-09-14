@@ -34,11 +34,13 @@ public class DBmanager implements Listener{
     
     public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
     
+    public static HashMap<String, PlotModel> IncompleteModels = new HashMap<String, PlotModel>();
+    
     public static Theme curr;
     
-    private static File Theme_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
+    private static final File Theme_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
     
-    private static File Plot_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
+    private static final File Plot_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
     
     public static int MaxPlotsPerPlayer;
     
@@ -87,6 +89,15 @@ public class DBmanager implements Listener{
             Freebuild.getPluginInstance().getConfig().set("currTheme", curr.getTheme());
         }
         Freebuild.getPluginInstance().saveConfig();
+    }
+    public static void savePlotModel(PlotModel model){
+        File out = new File(Plot_dat + System.getProperty("file.separator") + model.getName().replace(" ", "_") + ".MCplot");
+        model.saveModel(out);
+    }
+    public static PlotModel loadPlotModel(String name){
+        File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
+        PlotModel model = new PlotModel(name,in);
+        return model;
     }
     public static void loadAll(){
         MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");

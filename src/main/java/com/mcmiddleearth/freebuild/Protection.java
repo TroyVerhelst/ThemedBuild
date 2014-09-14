@@ -44,7 +44,7 @@ public final class Protection implements Listener{
     //on relog cant build
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if(event.isCancelled())
+        if(event.isCancelled() || !event.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         Player p = event.getPlayer();
         Block b = event.getBlock();
@@ -80,7 +80,7 @@ public final class Protection implements Listener{
         }
     }
     private void blockPlaceProtect(Block b, Player p, Cancellable e){
-        if(e.isCancelled())
+        if(e.isCancelled() || !b.getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         Location ploc=b.getLocation();
         canBuild = false;
@@ -99,6 +99,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e){
+        if(!e.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         Player p = e.getPlayer();
         Block b = e.getBlock();
         blockPlaceProtect(b,p,e);
@@ -111,6 +114,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerInteractBlock(PlayerInteractEvent e){
+        if(!e.getClickedBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         if(e.hasItem() && !e.isCancelled() && e.hasBlock()){
             Block b = e.getClickedBlock();
             Player p = e.getPlayer();
@@ -123,6 +129,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerEmpyBucket(PlayerBucketEmptyEvent e){
+        if(!e.getBlockClicked().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         BlockFace face = e.getBlockFace();
         Block b = e.getBlockClicked();
         Player p = e.getPlayer();
@@ -130,6 +139,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerFillBucket(PlayerBucketFillEvent e){
+        if(!e.getBlockClicked().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         if(!e.isCancelled()){
             Block b = e.getBlockClicked();
             BlockFace face = e.getBlockFace();
@@ -161,7 +173,7 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent e){
-        if(e.isCancelled())
+        if(e.isCancelled() || !e.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         BlockFace face = e.getDirection();
         List<Block> blocks = e.getBlocks();
@@ -174,7 +186,7 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPistonRetract(BlockPistonRetractEvent e){
-        if(e.isCancelled() || !e.isSticky())
+        if(e.isCancelled() || !e.isSticky() || !e.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         Block b = e.getRetractLocation().getBlock();
         if(!b.isEmpty() && !isInPlot(b)){
@@ -183,6 +195,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onBlockFromTo(BlockFromToEvent e){
+        if(!e.getToBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         Block b = e.getToBlock();
         if(!isInPlot(b)){
             e.setCancelled(true);
@@ -190,7 +205,10 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onHangingBreak(HangingBreakByEntityEvent e)
-    {       
+    {
+        if(!e.getEntity().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         HangingBreakByEntityEvent entityEvent = (HangingBreakByEntityEvent) e;
         Entity removerEntity = entityEvent.getRemover();
         Player p = (Player) removerEntity;
