@@ -35,61 +35,69 @@ public class Plot {
     private int rotation;
     @Getter
     private World w;
+    @Getter
+    private int sizeX = 50;
+    @Getter
+    private int sizeZ = 50;
     Block plotsign;
     
-    public Plot(Location corner, int rot){
+    public Plot(Location corner, int rot, int sx, int sz){
+        sizeX = sx;
+        sizeZ = sz;
         assigned = false;
         this.corner = new Location(corner.getWorld(), corner.getX(), corner.getY(), corner.getZ());
 //        corner.add(0, 2, 0).getBlock().setType(Material.BRICK);
         if(rot == 1){
             this.Boundz[0]=corner.getBlockZ();
-            this.Boundz[1]=corner.getBlockZ()+50;
+            this.Boundz[1]=corner.getBlockZ()+sizeZ;
             this.Boundx[0]=corner.getBlockX();
-            this.Boundx[1]=corner.getBlockX()+50;
+            this.Boundx[1]=corner.getBlockX()+sizeX;
         }else if(rot == 2){
             this.Boundz[0]=corner.getBlockZ();
-            this.Boundz[1]=corner.getBlockZ()+50;
-            this.Boundx[0]=corner.getBlockX()-50;
+            this.Boundz[1]=corner.getBlockZ()+sizeZ;
+            this.Boundx[0]=corner.getBlockX()-sizeX;
             this.Boundx[1]=corner.getBlockX();
         }else if(rot == 3){
-            this.Boundz[0]=corner.getBlockZ()-50;
+            this.Boundz[0]=corner.getBlockZ()-sizeZ;
             this.Boundz[1]=corner.getBlockZ();
-            this.Boundx[0]=corner.getBlockX()-50;
+            this.Boundx[0]=corner.getBlockX()-sizeX;
             this.Boundx[1]=corner.getBlockX();
         }else if(rot == 4){
-            this.Boundz[0]=corner.getBlockZ()-50;
+            this.Boundz[0]=corner.getBlockZ()-sizeZ;
             this.Boundz[1]=corner.getBlockZ();
             this.Boundx[0]=corner.getBlockX();
-            this.Boundx[1]=corner.getBlockX()+50;
+            this.Boundx[1]=corner.getBlockX()+sizeX;
         }
         this.w = corner.getWorld();
         this.rotation = rot;
         Generate();
     }
-    public Plot(Location corner, int rot, boolean assigned, String owner){
-        assigned = false;
+    public Plot(Location corner, int rot, boolean assigned, String owner, int sx, int sz){
+        sizeX = sx;
+        sizeZ = sz;
+        this.assigned = false;
         this.corner = new Location(corner.getWorld(), corner.getX(), corner.getY(), corner.getZ());
 //        corner.add(0, 2, 0).getBlock().setType(Material.BRICK);
         if(rot == 1){
             this.Boundz[0]=corner.getBlockZ();
-            this.Boundz[1]=corner.getBlockZ()+50;
+            this.Boundz[1]=corner.getBlockZ()+sizeZ;
             this.Boundx[0]=corner.getBlockX();
-            this.Boundx[1]=corner.getBlockX()+50;
+            this.Boundx[1]=corner.getBlockX()+sizeX;
         }else if(rot == 2){
             this.Boundz[0]=corner.getBlockZ();
-            this.Boundz[1]=corner.getBlockZ()+50;
-            this.Boundx[0]=corner.getBlockX()-50;
+            this.Boundz[1]=corner.getBlockZ()+sizeZ;
+            this.Boundx[0]=corner.getBlockX()-sizeX;
             this.Boundx[1]=corner.getBlockX();
         }else if(rot == 3){
-            this.Boundz[0]=corner.getBlockZ()-50;
+            this.Boundz[0]=corner.getBlockZ()-sizeZ;
             this.Boundz[1]=corner.getBlockZ();
-            this.Boundx[0]=corner.getBlockX()-50;
+            this.Boundx[0]=corner.getBlockX()-sizeX;
             this.Boundx[1]=corner.getBlockX();
         }else if(rot == 4){
-            this.Boundz[0]=corner.getBlockZ()-50;
+            this.Boundz[0]=corner.getBlockZ()-sizeZ;
             this.Boundz[1]=corner.getBlockZ();
             this.Boundx[0]=corner.getBlockX();
-            this.Boundx[1]=corner.getBlockX()+50;
+            this.Boundx[1]=corner.getBlockX()+sizeX;
         }
         this.w = corner.getWorld();
         this.rotation = rot;
@@ -101,21 +109,22 @@ public class Plot {
     private void Generate(){
             for(int x = Boundx[0]; x < Boundx[1]; x++){
                 Location lc = new Location(w, x, corner.getBlockY(), Boundz[0]);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             for(int x = Boundx[0]; x < Boundx[1]; x++){
                 Location lc = new Location(w, x, corner.getBlockY(), Boundz[1]);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
                 Location lc = new Location(w, Boundx[0], corner.getBlockY(), z);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
                 Location lc = new Location(w, Boundx[1], corner.getBlockY(), z);
-                lc.getBlock().setType(Material.DIAMOND_BLOCK);
+                lc.getBlock().setType(Material.DOUBLE_STEP);
             }
-            new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DIAMOND_BLOCK);
+            new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DOUBLE_STEP);
+            DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
     }
     public void assign(Player p){
         DBmanager.curr.getCurrplots().remove(this);
