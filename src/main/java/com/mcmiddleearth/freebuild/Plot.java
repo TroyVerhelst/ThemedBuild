@@ -67,7 +67,7 @@ public class Plot {
         Generate();
     }
     public Plot(Location corner, int rot, boolean assigned, String owner){
-        assigned = false;
+        this.assigned = false;
         this.corner = new Location(corner.getWorld(), corner.getX(), corner.getY(), corner.getZ());
 //        corner.add(0, 2, 0).getBlock().setType(Material.BRICK);
         if(rot == 1){

@@ -1,9 +1,9 @@
 PlotManager
 ===========
 
-Current Author: DonoA
+Current Author(s): DonoA, Ivan1pl
 
-Authors: DonoA, aaldim
+Authors: DonoA, aaldim, Ivan1pl
 
 The PlotManager is a plugin designed to aid staff members in the generation of free build plots. It also blocks any non staff from building/griefing other builder's plots. The only command in this plugin is '/theme'.
 

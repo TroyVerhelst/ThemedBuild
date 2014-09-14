@@ -6,6 +6,9 @@
 
 package com.mcmiddleearth.freebuild;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
@@ -38,7 +41,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 .withModality(true)
                 .withFirstPrompt(new setTitle())
                 .withTimeout(600)
-                .thatExcludesNonPlayersWithMessage("You must be a player to send this command");
+                .thatExcludesNonPlayersWithMessage(Freebuild.prefix + "You must be a player to send this command");
     }
     
     @Override
@@ -46,13 +49,18 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
         Player p = (Player) sender;
         if(cmd.getName().equalsIgnoreCase("theme")){
             if(args.length == 0){
+                if(!DBmanager.InfinitePlotsPerPlayer && DBmanager.plots.containsKey(p.getName())
+                        && DBmanager.MaxPlotsPerPlayer <= DBmanager.plots.get(p.getName()).size()){
+                    p.sendMessage(Freebuild.prefix + "You reached maximum number of plots");
+                    return true;
+                }
                 //move the player and gen new plot
                 for(Plot plot : DBmanager.curr.getCurrplots()){
                     if(!plot.isAssigned()){
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.teleport(new Location(plot.getCorner().getWorld(), plot.getCorner().getBlockX(), plot.getCorner().getBlockY()+2, plot.getCorner().getBlockZ()));
-                        p.sendMessage("Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         return true;
                     }
                 }
@@ -61,7 +69,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     if(!plot.isAssigned()){
                         plot.assign(p);
                         p.teleport(plot.getCorner());
-                        p.sendMessage("Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         return true;
                     }
                 }
@@ -69,15 +77,19 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 //create new theme
                 p.sendMessage("Generating...");
                 String tname = "";
-                for(String s : args){
-                    if(!s.equalsIgnoreCase("new")){
-                        tname += s + " ";
-                    }
+                if(args.length == 1){
+                    return false;
+                }
+                for(String s : Arrays.asList(args).subList(1, args.length)){
+                    tname += s + " ";
                 }
                 Theme theme = new Theme(tname, " ");
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr.close();
                 DBmanager.curr = theme;
+                if(!DBmanager.BuildPastPlots){
+                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                }
                 p.teleport(theme.getCent());
 //                type = args[0];
 //                ploc = p.getLocation();
@@ -87,16 +99,20 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
             }
             else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create")){
                 //set and generate a theme with player at center
-                p.sendMessage("Generating...");
+                p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
-                for(String s : args){
-                    if(!s.equalsIgnoreCase("set")){
-                        tname += s + " ";
-                    }
+                if(args.length == 1){
+                    return false;
+                }
+                for(String s : Arrays.asList(args).subList(1, args.length)){
+                    tname += s + " ";
                 }
                 Theme theme = new Theme(tname, " ", p.getLocation());
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr = theme;
+                if(!DBmanager.BuildPastPlots){
+                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                }
                 return true;
             }
         }
@@ -105,7 +121,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 
     @Override
     public void conversationAbandoned(ConversationAbandonedEvent cae) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(Freebuild.prefix + "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 class setTitle extends StringPrompt {
     @Override

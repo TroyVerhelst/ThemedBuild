@@ -85,7 +85,7 @@ public class Theme {
         
     }
     public void genPlots(boolean first){
-        Bukkit.getServer().broadcastMessage("Generating new plots, Lag incoming");
+        Bukkit.getServer().broadcastMessage(Freebuild.prefix + "Generating new plots, Lag incoming");
         Plot p1;
         Plot p2;
         Plot p3;
