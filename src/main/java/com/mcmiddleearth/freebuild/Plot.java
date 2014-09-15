@@ -124,12 +124,12 @@ public class Plot {
                 lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DOUBLE_STEP);
-            DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
     }
     public void assign(Player p){
         DBmanager.curr.getCurrplots().remove(this);
         this.p = p.getName();
         assigned = true;
+        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
 //        DBmanager.curr.getPlots().put(p.getName(), this);
         if(DBmanager.plots.containsKey(p.getName())){
             ArrayList<Plot> ps = DBmanager.plots.get(p.getName());
