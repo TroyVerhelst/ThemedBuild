@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,7 +35,7 @@ public class DBmanager implements Listener{
     
     public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
     
-    public static HashMap<String, PlotModel> IncompleteModels = new HashMap<String, PlotModel>();
+    public static PlotModel IncompleteModel = null;
     
     public static Theme curr;
     
@@ -49,6 +50,8 @@ public class DBmanager implements Listener{
     public static boolean InfinitePlotsPerPlayer;
     
     public static boolean BuildPastPlots;
+    
+    public static Material ModelTool;
     
     static{
         if(!Theme_dat.exists()){
@@ -97,9 +100,9 @@ public class DBmanager implements Listener{
         }
         Freebuild.getPluginInstance().saveConfig();
     }
-    public static void savePlotModel(PlotModel model){
+    public static void savePlotModel(PlotModel model, Player p){
         File out = new File(Plot_dat + System.getProperty("file.separator") + model.getName().replace(" ", "_") + ".MCplot");
-        model.saveModel(out);
+        model.saveModel(out,p);
     }
     public static PlotModel loadPlotModel(String name){
         File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
@@ -110,6 +113,7 @@ public class DBmanager implements Listener{
         MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
         BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
+        ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
             name = name.replace(".MCtheme", "");

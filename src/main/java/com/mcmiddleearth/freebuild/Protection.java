@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -114,6 +115,22 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerInteractBlock(PlayerInteractEvent e){
+        if(!e.isCancelled() && e.getPlayer().hasPermission("plotmanager.create") && DBmanager.IncompleteModel != null
+                && e.getPlayer().getItemInHand().getType() == DBmanager.ModelTool && e.hasBlock()){
+            Action action = e.getAction();
+            if(action == Action.LEFT_CLICK_BLOCK){
+                DBmanager.IncompleteModel.setPoint1(e.getClickedBlock().getLocation());
+                e.getPlayer().sendMessage(Freebuild.prefix + "First point set");
+                e.setCancelled(true);
+                return;
+            }
+            else if(action == Action.RIGHT_CLICK_BLOCK){
+                DBmanager.IncompleteModel.setPoint2(e.getClickedBlock().getLocation());
+                e.getPlayer().sendMessage(Freebuild.prefix + "Second point set");
+                e.setCancelled(true);
+                return;
+            }
+        }
         if(DBmanager.curr == null || !e.hasBlock() || !e.getClickedBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
             return;
         }

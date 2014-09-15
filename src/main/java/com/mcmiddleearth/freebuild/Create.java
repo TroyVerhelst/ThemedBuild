@@ -127,50 +127,16 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
             }
             else if(args[0].equalsIgnoreCase("createmodel")){
                 if(args.length == 2){
-                    PlotModel model = new PlotModel(args[1]);
-                    DBmanager.IncompleteModels.put(args[1], model);
+                    DBmanager.IncompleteModel = new PlotModel(args[1]);
                     p.sendMessage(Freebuild.prefix + "Empty model created");
                     return true;
                 }
-                else if(args.length == 3){
-                    if(DBmanager.IncompleteModels.containsKey(args[1])){
-                        PlotModel model = DBmanager.IncompleteModels.get(args[1]);
-                        if(args[2].equalsIgnoreCase("point1")){
-                            model.setPoint1(p.getLocation());
-                            p.sendMessage(Freebuild.prefix + "First point set");
-                            return true;
-                        }
-                        else if(args[2].equalsIgnoreCase("point2")){
-                            model.setPoint2(p.getLocation());
-                            p.sendMessage(Freebuild.prefix + "Second point set");
-                            return true;
-                        }
-                    }
-                }
-                else if(args.length == 4){
-                    if(DBmanager.IncompleteModels.containsKey(args[1])){
-                        PlotModel model = DBmanager.IncompleteModels.get(args[1]);
-                        if(args[2].equalsIgnoreCase("height")){
-                            try{
-                                model.setHeight(Integer.parseInt(args[3]));
-                                p.sendMessage(Freebuild.prefix + "Height set");
-                                return true;
-                            }
-                            catch(NumberFormatException ex){
-                                return false;
-                            }
-                        }
-                    }
-                }
             }
-            else if(args[0].equalsIgnoreCase("savemodel") && args.length == 2){
-                if(DBmanager.IncompleteModels.containsKey(args[1])){
+            else if(args[0].equalsIgnoreCase("savemodel") && args.length == 1){
+                if(DBmanager.IncompleteModel != null){
                     p.sendMessage(Freebuild.prefix + "Saving model");
                     p.sendMessage(Freebuild.prefix + "Please wait...");
-                    PlotModel model = DBmanager.IncompleteModels.get(args[1]);
-                    DBmanager.savePlotModel(model);
-                    DBmanager.IncompleteModels.remove(args[1]);
-                    p.sendMessage(Freebuild.prefix + "Model saved");
+                    DBmanager.savePlotModel(DBmanager.IncompleteModel,p);
                     return true;
                 }
             }
