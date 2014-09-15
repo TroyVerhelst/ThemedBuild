@@ -27,7 +27,7 @@ import org.bukkit.entity.Player;
 
 /**
  *
- * @author Donovan
+ * @author Donovan, Ivan1pl
  */
 public class Create implements CommandExecutor, ConversationAbandonedListener{
     private final ConversationFactory conversationFactory;
@@ -59,7 +59,6 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     if(!plot.isAssigned()){
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
-                        p.teleport(new Location(plot.getCorner().getWorld(), plot.getCorner().getBlockX(), plot.getCorner().getBlockY()+2, plot.getCorner().getBlockZ()));
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         return true;
                     }
@@ -78,15 +77,23 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 p.sendMessage("Generating...");
                 String tname = "";
                 String modelname = "default";
+                int namebegin = 1;
                 if(args.length == 1){
                     return false;
                 }
                 if(args[1].equals("-m") && args.length > 3){
                     modelname = args[2];
+                    namebegin = 3;
+                    if(!DBmanager.modelExists(modelname)){
+                        p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
+                        p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                        return true;
+                    }
                 }
-                for(String s : Arrays.asList(args).subList(1, args.length)){
+                for(String s : Arrays.asList(args).subList(namebegin, args.length)){
                     tname += s + " ";
                 }
+                tname = tname.trim();
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", modelname);
                 DBmanager.Themes.put(tname, theme);
@@ -95,7 +102,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 if(!DBmanager.BuildPastPlots){
                     DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
                 }
-                p.teleport(theme.getCent());
+                p.teleport(new Location(theme.getCent().getWorld(), theme.getCent().getX(), theme.getCent().getY()+1, theme.getCent().getZ()));
 //                type = args[0];
 //                ploc = p.getLocation();
 //                conversationFactory.buildConversation((Conversable) sender).begin();
@@ -107,15 +114,23 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
                 String modelname = "default";
+                int namebegin = 1;
                 if(args.length == 1){
                     return false;
                 }
                 if(args[1].equals("-m") && args.length > 3){
                     modelname = args[2];
+                    namebegin = 3;
+                    if(!DBmanager.modelExists(modelname)){
+                        p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
+                        p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                        return true;
+                    }
                 }
-                for(String s : Arrays.asList(args).subList(1, args.length)){
+                for(String s : Arrays.asList(args).subList(namebegin, args.length)){
                     tname += s + " ";
                 }
+                tname = tname.trim();
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);
@@ -125,20 +140,29 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 }
                 return true;
             }
-            else if(args[0].equalsIgnoreCase("createmodel")){
+            else if(args[0].equalsIgnoreCase("createmodel") && p.hasPermission("plotmanager.create")){
                 if(args.length == 2){
                     DBmanager.IncompleteModel = new PlotModel(args[1]);
                     p.sendMessage(Freebuild.prefix + "Empty model created");
                     return true;
                 }
             }
-            else if(args[0].equalsIgnoreCase("savemodel") && args.length == 1){
+            else if(args[0].equalsIgnoreCase("savemodel") && args.length == 1 && p.hasPermission("plotmanager.create")){
                 if(DBmanager.IncompleteModel != null){
                     p.sendMessage(Freebuild.prefix + "Saving model");
                     p.sendMessage(Freebuild.prefix + "Please wait...");
                     DBmanager.savePlotModel(DBmanager.IncompleteModel,p);
                     return true;
                 }
+            }
+            else if(args[0].equalsIgnoreCase("listmodels") && args.length == 1 && p.hasPermission("plotmanager.create")){
+                p.sendMessage(Freebuild.prefix + "Existing models:");
+                String models = "";
+                for(String s: DBmanager.Models){
+                    models += s + " ";
+                }
+                p.sendMessage(models);
+                return true;
             }
         }
         return false;

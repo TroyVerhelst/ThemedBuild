@@ -47,7 +47,6 @@ public class PlotModel {
         name = modelname;
         sizex = sizey = sizez = 0;
     }
-    @Deprecated
     public PlotModel(String modelname, File in){
         name = modelname;
         try {
@@ -61,13 +60,11 @@ public class PlotModel {
             else{
                 model = new ItemStack[sizex][sizey][sizez];
             }
-            List<String> line = Arrays.asList(stream.nextLine().split("\\s*,\\s*"));
             for(int x = 0; x < sizex; ++x){
                 for(int y = 0; y < sizey; ++y){
                     for(int z = 0; z < sizez; ++z){
-                        Material mat = Material.getMaterial(line.get(2*(z+y*sizez+x*sizey*sizez)));
-                        MaterialData matd = new MaterialData(mat,Byte.parseByte(line.get(2*(z+y*sizez+x*sizey*sizez)+1)));
-                        model[x][y][z] = matd.toItemStack();
+                        Material mat = Material.getMaterial(stream.nextLine());
+                        model[x][y][z] = new ItemStack(mat,1,Short.parseShort(stream.nextLine()));
                     }
                 }
             }
@@ -82,7 +79,6 @@ public class PlotModel {
     public void setPoint2(Location l){
         point2 = new Location(l.getWorld(),l.getBlockX(),l.getBlockY(),l.getBlockZ());
     }
-    @Deprecated
     public void saveModel(File out, Player p){
         if(point1 != null && point2 != null && point1.getWorld().getName().equals(point2.getWorld().getName())){
             sizex = Math.abs(point1.getBlockX()-point2.getBlockX())+1;
@@ -119,8 +115,8 @@ public class PlotModel {
                 for(int x = 0; x < sizex; ++x){
                     for(int y = 0; y < sizey; ++y){
                         for(int z = 0; z < sizez; ++z){
-                            stream.print(model[x][y][z].getType().toString() + " , ");
-                            stream.print(Byte.toString(model[x][y][z].getData().getData()) + " , ");
+                            stream.println(model[x][y][z].getType().toString());
+                            stream.println(model[x][y][z].getDurability());
                         }
                     }
                     if(p != null){
@@ -160,7 +156,6 @@ public class PlotModel {
             }
         }
     }
-    @Deprecated
     public static void generateDefaultModel(File out){
         try {
             FileWriter fos = new FileWriter(out);

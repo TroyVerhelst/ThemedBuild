@@ -53,6 +53,8 @@ public class DBmanager implements Listener{
     
     public static Material ModelTool;
     
+    public static ArrayList<String> Models;
+    
     static{
         if(!Theme_dat.exists()){
             Theme_dat.mkdirs();
@@ -103,17 +105,34 @@ public class DBmanager implements Listener{
     public static void savePlotModel(PlotModel model, Player p){
         File out = new File(Plot_dat + System.getProperty("file.separator") + model.getName().replace(" ", "_") + ".MCplot");
         model.saveModel(out,p);
+        updateModelsList();
     }
     public static PlotModel loadPlotModel(String name){
         File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
         PlotModel model = new PlotModel(name,in);
         return model;
     }
+    public static void updateModelsList(){
+        Models = new ArrayList<String>();
+        for(File f: Plot_dat.listFiles()){
+            String name = f.getName().replace(".MCplot", "");
+            Models.add(name);
+        }
+    }
+    public static boolean modelExists(String model){
+        for(String s: Models){
+            if(s.equals(model)){
+                return true;
+            }
+        }
+        return false;
+    }
     public static void loadAll(){
         MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
         BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
         ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
+        updateModelsList();
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
             name = name.replace(".MCtheme", "");
