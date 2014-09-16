@@ -33,6 +33,8 @@ import org.bukkit.event.world.WorldSaveEvent;
 public class DBmanager implements Listener{
     public static HashMap<String, ArrayList<Plot>> plots = new HashMap<String, ArrayList<Plot>>();
     
+    public static HashMap<String, ArrayList<Plot>> pastPlots = new HashMap<String, ArrayList<Plot>>();
+    
     public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
     
     public static PlotModel IncompleteModel = null;
@@ -171,7 +173,7 @@ public class DBmanager implements Listener{
                     plotz.add(p);
                     if(!assigned){
                         currplotz.add(p);
-                    }else if(BuildPastPlots || isCurrent){
+                    }else if(isCurrent){
                         if(DBmanager.plots.containsKey(owner)){
                             ArrayList<Plot> ps = DBmanager.plots.get(owner);
                             ps.add(p);
@@ -180,6 +182,16 @@ public class DBmanager implements Listener{
                             ArrayList<Plot> ps = new ArrayList<Plot>();
                             ps.add(p);
                             DBmanager.plots.put(owner, ps);
+                        }
+                    }else{
+                        if(DBmanager.pastPlots.containsKey(owner)){
+                            ArrayList<Plot> ps = DBmanager.pastPlots.get(owner);
+                            ps.add(p);
+                            DBmanager.pastPlots.put(owner, ps);
+                        }else{
+                            ArrayList<Plot> ps = new ArrayList<Plot>();
+                            ps.add(p);
+                            DBmanager.pastPlots.put(owner, ps);
                         }
                     }
                 }

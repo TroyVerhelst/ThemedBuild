@@ -75,6 +75,15 @@ public final class Protection implements Listener{
                 }
             }
         }
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+//            p.sendMessage(pPlots.toString());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
+                }
+            }
+        }
         if(!canBuild){
             if(!p.hasPermission("plotmanager.create"))
                 event.setCancelled(true);
@@ -87,6 +96,15 @@ public final class Protection implements Listener{
         canBuild = false;
         if(DBmanager.plots.containsKey(p.getName())){
             List<Plot> pPlots = DBmanager.plots.get(p.getName());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
+                }
+            }
+        }
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+//            p.sendMessage(pPlots.toString());
             for(Plot plot : pPlots){
                 if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
                     canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
@@ -174,6 +192,20 @@ public final class Protection implements Listener{
             }
         }
     }
+    private boolean isInPastPlot(Block b){
+        Location ploc=b.getLocation();
+        Set<String> keys = DBmanager.pastPlots.keySet();
+        List<Plot> pPlots;
+        for(String k : keys){
+            pPlots = DBmanager.pastPlots.get(k);
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     private boolean isInPlot(Block b){
         Location ploc=b.getLocation();
         Set<String> keys = DBmanager.plots.keySet();
@@ -186,7 +218,7 @@ public final class Protection implements Listener{
                 }
             }
         }
-        return false;
+        return (DBmanager.BuildPastPlots && isInPastPlot(b));
     }
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent e){

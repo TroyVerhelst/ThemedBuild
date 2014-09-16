@@ -9,6 +9,7 @@ package com.mcmiddleearth.freebuild;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
@@ -99,9 +100,17 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr.close();
                 DBmanager.curr = theme;
-                if(!DBmanager.BuildPastPlots){
-                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                Set<String> owners = DBmanager.plots.keySet();
+                for(String s: owners){
+                    ArrayList<Plot> pl = DBmanager.plots.get(s);
+                    if(DBmanager.pastPlots.containsKey(s)){
+                        ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
+                        ppl.addAll(pl);
+                    }else{
+                        DBmanager.pastPlots.put(s, pl);
+                    }
                 }
+                DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
                 p.teleport(new Location(theme.getCent().getWorld(), theme.getCent().getX(), theme.getCent().getY()+1, theme.getCent().getZ()));
 //                type = args[0];
 //                ploc = p.getLocation();
@@ -135,9 +144,17 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr = theme;
-                if(!DBmanager.BuildPastPlots){
-                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                Set<String> owners = DBmanager.plots.keySet();
+                for(String s: owners){
+                    ArrayList<Plot> pl = DBmanager.plots.get(s);
+                    if(DBmanager.pastPlots.containsKey(s)){
+                        ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
+                        ppl.addAll(pl);
+                    }else{
+                        DBmanager.pastPlots.put(s, pl);
+                    }
                 }
+                DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
                 return true;
             }
             else if(args[0].equalsIgnoreCase("createmodel") && p.hasPermission("plotmanager.create")){
@@ -162,6 +179,46 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     models += s + " ";
                 }
                 p.sendMessage(models);
+                return true;
+            }
+            else if(args[0].equalsIgnoreCase("help")){
+                if(args.length == 1 || args.length > 2){
+                    return false;
+                }
+                p.sendMessage(Freebuild.prefix + "Displaying help for " + ChatColor.DARK_GREEN + "/theme " + args[1]);
+                if(args[1].equalsIgnoreCase("set")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme set [-m <model>] <name>" + ChatColor.WHITE + " -- start new chain of Themed Builds");
+                    p.sendMessage("If " + ChatColor.DARK_GREEN + "-m <model>" + ChatColor.WHITE + " is not specified, default model is used");
+                    p.sendMessage("To see available models, " + ChatColor.DARK_GREEN + "/theme listmodels");
+                }
+                else if(args[1].equalsIgnoreCase("new")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme new [-m <model>] <name>" + ChatColor.WHITE + " -- create new Themed Build in current chain");
+                    p.sendMessage("If " + ChatColor.DARK_GREEN + "-m <model>" + ChatColor.WHITE + " is not specified, default model is used");
+                    p.sendMessage("To see available models, " + ChatColor.DARK_GREEN + "/theme listmodels");
+                }
+                else if(args[1].equalsIgnoreCase("createmodel")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme createmodel <name>" + ChatColor.WHITE + " -- create empty plot model");
+                    p.sendMessage("Created model is empty, and can't be saved");
+                    p.sendMessage("Use model tool (default is wooden sword, can be changed in config.yml) to set points");
+                    p.sendMessage("While holding model tool, left click on block to set first point, right click to set second point");
+                    p.sendMessage("After both points are set, use " + ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " to save your model");
+                }
+                else if(args[1].equalsIgnoreCase("savemodel")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " -- save current model");
+                    p.sendMessage("Model can't be used before it's saved");
+                }
+                else if(args[1].equalsIgnoreCase("listmodels")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme listmodels" + ChatColor.WHITE + " -- list available models");
+                    p.sendMessage("Only saved models are listed");
+                }
+                else if(args[1].equalsIgnoreCase("help")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme help [subcommand]" + ChatColor.WHITE + " -- view more informations about subcommand");
+                    p.sendMessage("If subcommand is not specified, this command displays general help");
+                }
+                else{
+                    p.sendMessage("Specified subcommand does not exist");
+                    p.sendMessage("Use " + ChatColor.DARK_GREEN + "/theme help" + ChatColor.WHITE + " to see available subcommands");
+                }
                 return true;
             }
         }

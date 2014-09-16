@@ -148,6 +148,7 @@ public class Theme {
     public void close(){
         genGate(getCent().getWorld(), getCent().getBlockX()-3, getCent().getBlockY()+1, getCent().getBlockZ(), BlockFace.EAST);
         genGate(getCent().getWorld(), getCent().getBlockX()+3, getCent().getBlockY()+1, getCent().getBlockZ(), BlockFace.WEST);
+        DBmanager.save();
     }
     public void genPlots(boolean first){
         Bukkit.getServer().broadcastMessage(Freebuild.prefix + "Generating new plots, Lag incoming");
