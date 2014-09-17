@@ -7,7 +7,6 @@
 package com.mcmiddleearth.freebuild;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,9 +29,9 @@ public class Theme {
     @Getter
     private Location cent;
     @Getter
-    private ArrayList<Plot> plots = new ArrayList<Plot>();
+    private ArrayList<Plot> plots = new ArrayList<>();
     @Getter
-    private ArrayList<Plot> currplots = new ArrayList<Plot>();
+    private ArrayList<Plot> currplots = new ArrayList<>();
     @Getter
     private int x_left;
     @Getter

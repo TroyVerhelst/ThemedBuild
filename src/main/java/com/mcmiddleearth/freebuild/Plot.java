@@ -7,8 +7,6 @@
 package com.mcmiddleearth.freebuild;
                 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
