@@ -9,13 +9,19 @@ The PlotManager is a plugin designed to aid staff members in the generation of f
 
 'Theme' - this command just on its own sends the executer to a new plot in the current theme for them to build on, it also provides them building permissions on that plot.
 
-'Theme set <theme name>' - this command should only be used by administrators to start off a chain of themes. The theme name cannot be the same as an old theme and will appear on every builders plot sign. Players who use '/theme' will be sent to this theme instead of any old ones.
+'Theme set [-m model] <theme name>' - this command should only be used by administrators to start off a chain of themes. The theme name cannot be the same as an old theme and will appear on every builders plot sign. Players who use '/theme' will be sent to this theme instead of any old ones. If model is not specified, default model will be used.
 
-'Theme new <theme name>' - this command should be used by a staff member to create a new theme after the last one. It generates a 109 blocks from the other theme which allows for the 50 block wide plots to have 5 blocks in between (because of the paths). The theme name cannot be the same as an old theme and will appear on every builders plot sign. Players who use '/theme' will be sent to this theme instead of any old ones.
+'Theme new [-m model] <theme name>' - this command should be used by a staff member to create a new theme after the last one. The theme name cannot be the same as an old theme and will appear on every builders plot sign. Players who use '/theme' will be sent to this theme instead of any old ones.  If model is not specified, default model will be used.
 
-Planned features:
+'Theme createmodel <name>' - this command should be used by a staff member to create a model, which can later be used as base model for all plots in a theme. Each theme has exactly one model. Default model is 48x48 empty area.
+
+'Theme savemodel' - this command should be used by a staff member to save a model. Unsaved models can't be used.
+
+'Theme listmodels' - this commands lists all saved models.
+
+Features:
 * custom plots based off a model
-* the insertion of a URL to the theme thread
 * limitations on the number of plots that can be claimed by one player
 * plot size changing
 * allowance for players to use lava/water inside their plot
+* the insertion of a URL to the theme thread

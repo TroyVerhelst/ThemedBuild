@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
@@ -23,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -44,7 +44,7 @@ public final class Protection implements Listener{
     //on relog cant build
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if(event.isCancelled())
+        if(event.isCancelled() || DBmanager.curr == null || !event.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         Player p = event.getPlayer();
         Block b = event.getBlock();
@@ -74,13 +74,22 @@ public final class Protection implements Listener{
                 }
             }
         }
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+//            p.sendMessage(pPlots.toString());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
+                }
+            }
+        }
         if(!canBuild){
-//            if(!p.hasPermission("plotmanager.create"))
+            if(!p.hasPermission("plotmanager.create"))
                 event.setCancelled(true);
         }
     }
     private void blockPlaceProtect(Block b, Player p, Cancellable e){
-        if(e.isCancelled())
+        if(e.isCancelled() || DBmanager.curr == null || !b.getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         Location ploc=b.getLocation();
         canBuild = false;
@@ -92,13 +101,25 @@ public final class Protection implements Listener{
                 }
             }
         }
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+//            p.sendMessage(pPlots.toString());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
+                }
+            }
+        }
         if(!canBuild){
-//            if(!p.hasPermission("plotmanager.create"))
+            if(!p.hasPermission("plotmanager.create"))
                 e.setCancelled(true);
         }
     }
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e){
+        if(DBmanager.curr == null || !e.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         Player p = e.getPlayer();
         Block b = e.getBlock();
         blockPlaceProtect(b,p,e);
@@ -111,7 +132,26 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerInteractBlock(PlayerInteractEvent e){
-        if(e.hasItem() && !e.isCancelled() && e.hasBlock()){
+        if(!e.isCancelled() && e.getPlayer().hasPermission("plotmanager.create") && DBmanager.IncompleteModel != null
+                && e.getPlayer().getItemInHand().getType() == DBmanager.ModelTool && e.hasBlock()){
+            Action action = e.getAction();
+            if(action == Action.LEFT_CLICK_BLOCK){
+                DBmanager.IncompleteModel.setPoint1(e.getClickedBlock().getLocation());
+                e.getPlayer().sendMessage(Freebuild.prefix + "First point set");
+                e.setCancelled(true);
+                return;
+            }
+            else if(action == Action.RIGHT_CLICK_BLOCK){
+                DBmanager.IncompleteModel.setPoint2(e.getClickedBlock().getLocation());
+                e.getPlayer().sendMessage(Freebuild.prefix + "Second point set");
+                e.setCancelled(true);
+                return;
+            }
+        }
+        if(DBmanager.curr == null || !e.hasBlock() || !e.getClickedBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
+        if(e.hasItem() && !e.isCancelled()){
             Block b = e.getClickedBlock();
             Player p = e.getPlayer();
             ItemStack item = e.getItem();
@@ -123,6 +163,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerEmpyBucket(PlayerBucketEmptyEvent e){
+        if(DBmanager.curr == null || !e.getBlockClicked().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         BlockFace face = e.getBlockFace();
         Block b = e.getBlockClicked();
         Player p = e.getPlayer();
@@ -130,6 +173,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerFillBucket(PlayerBucketFillEvent e){
+        if(DBmanager.curr == null || !e.getBlockClicked().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         if(!e.isCancelled()){
             Block b = e.getBlockClicked();
             BlockFace face = e.getBlockFace();
@@ -145,6 +191,20 @@ public final class Protection implements Listener{
             }
         }
     }
+    private boolean isInPastPlot(Block b){
+        Location ploc=b.getLocation();
+        Set<String> keys = DBmanager.pastPlots.keySet();
+        List<Plot> pPlots;
+        for(String k : keys){
+            pPlots = DBmanager.pastPlots.get(k);
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     private boolean isInPlot(Block b){
         Location ploc=b.getLocation();
         Set<String> keys = DBmanager.plots.keySet();
@@ -157,11 +217,11 @@ public final class Protection implements Listener{
                 }
             }
         }
-        return false;
+        return (DBmanager.BuildPastPlots && isInPastPlot(b));
     }
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent e){
-        if(e.isCancelled())
+        if(e.isCancelled() || DBmanager.curr == null || !e.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         BlockFace face = e.getDirection();
         List<Block> blocks = e.getBlocks();
@@ -174,7 +234,8 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPistonRetract(BlockPistonRetractEvent e){
-        if(e.isCancelled() || !e.isSticky())
+        if(e.isCancelled() || !e.isSticky() || DBmanager.curr == null
+                || !e.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
             return;
         Block b = e.getRetractLocation().getBlock();
         if(!b.isEmpty() && !isInPlot(b)){
@@ -183,6 +244,9 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onBlockFromTo(BlockFromToEvent e){
+        if(DBmanager.curr == null || !e.getToBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         Block b = e.getToBlock();
         if(!isInPlot(b)){
             e.setCancelled(true);
@@ -190,7 +254,10 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onHangingBreak(HangingBreakByEntityEvent e)
-    {       
+    {
+        if(DBmanager.curr == null || !e.getEntity().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
         HangingBreakByEntityEvent entityEvent = (HangingBreakByEntityEvent) e;
         Entity removerEntity = entityEvent.getRemover();
         Player p = (Player) removerEntity;

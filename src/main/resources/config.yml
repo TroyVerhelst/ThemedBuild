@@ -1,2 +1,3 @@
-maxPlotsPerPlayer: -1
+maxPlotsPerPlayer: 1
 buildPastPlots: false
+modelTool: WOOD_SWORD

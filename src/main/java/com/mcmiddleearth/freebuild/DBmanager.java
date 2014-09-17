@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,15 +31,21 @@ import org.bukkit.event.world.WorldSaveEvent;
  * @author Donovan
  */
 public class DBmanager implements Listener{
-    public static HashMap<String, ArrayList<Plot>> plots = new HashMap<String, ArrayList<Plot>>();
+    public static HashMap<String, ArrayList<Plot>> plots = new HashMap<>();
     
-    public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
+    public static HashMap<String, ArrayList<Plot>> pastPlots = new HashMap<>();
+    
+    public static HashMap<String, Theme> Themes = new HashMap<>();
+    
+    public static PlotModel IncompleteModel = null;
     
     public static Theme curr;
     
-    private static File Theme_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
+    public static PlotModel currModel;
     
-    private static File Plot_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
+    private static final File Theme_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
+    
+    private static final File Plot_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
     
     public static int MaxPlotsPerPlayer;
     
@@ -46,12 +53,18 @@ public class DBmanager implements Listener{
     
     public static boolean BuildPastPlots;
     
+    public static Material ModelTool;
+    
+    public static ArrayList<String> Models;
+    
     static{
         if(!Theme_dat.exists()){
             Theme_dat.mkdirs();
         }
         if(!Plot_dat.exists()){
             Plot_dat.mkdirs();
+            File out = new File(Plot_dat + System.getProperty("file.separator") + "default.MCplot");
+            PlotModel.generateDefaultModel(out);
         }
     }
     
@@ -65,20 +78,23 @@ public class DBmanager implements Listener{
                     //------
                     writer.println(curr.getX_left());
                     writer.println(curr.getX_right());
+                    writer.println(curr.getModel());
                     writer.println("Plots:");
                     System.out.println(curr.getPlots().toString());
                     for(Plot p : curr.getPlots()){
-                            String s = p.getCorner().getWorld().getName() + " , " + 
-                                       p.getCorner().getBlockX() + " , " + 
-                                       p.getCorner().getBlockY() + " , " + 
-                                       p.getCorner().getBlockZ() + " , " + 
-                                       p.getRotation();
-                                       if(curr.getCurrplots().contains(p)){
-                                           s += " , #curr#";
-                                       } else {
-                                           s += " , " + p.getP();
+                        String s = p.getCorner().getWorld().getName() + " , " + 
+                                   p.getCorner().getBlockX() + " , " + 
+                                   p.getCorner().getBlockY() + " , " + 
+                                   p.getCorner().getBlockZ() + " , " + 
+                                   p.getRotation() + " , " +
+                                   p.getSizeX() + " , " +
+                                   p.getSizeZ();
+                        if(curr.getCurrplots().contains(p)){
+                            s += " , #curr#";
+                        } else {
+                            s += " , " + p.getP();
                         }
-                            writer.println(s);
+                        writer.println(s);
                     }
                 }
             } catch (IOException ex) {
@@ -88,10 +104,37 @@ public class DBmanager implements Listener{
         }
         Freebuild.getPluginInstance().saveConfig();
     }
+    public static void savePlotModel(PlotModel model, Player p){
+        File out = new File(Plot_dat + System.getProperty("file.separator") + model.getName().replace(" ", "_") + ".MCplot");
+        model.saveModel(out,p);
+        updateModelsList();
+    }
+    public static PlotModel loadPlotModel(String name){
+        File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
+        PlotModel model = new PlotModel(name,in);
+        return model;
+    }
+    public static void updateModelsList(){
+        Models = new ArrayList<>();
+        for(File f: Plot_dat.listFiles()){
+            String name = f.getName().replace(".MCplot", "");
+            Models.add(name);
+        }
+    }
+    public static boolean modelExists(String model){
+        for(String s: Models){
+            if(s.equals(model)){
+                return true;
+            }
+        }
+        return false;
+    }
     public static void loadAll(){
         MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
         BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
+        ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
+        updateModelsList();
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
             name = name.replace(".MCtheme", "");
@@ -105,15 +148,18 @@ public class DBmanager implements Listener{
                 Location cent = new Location(Bukkit.getWorld(items.get(0)), Integer.parseInt(items.get(1)), Integer.parseInt(items.get(2))+1, Integer.parseInt(items.get(3)));
                 int xl = Integer.parseInt(s.nextLine());
                 int xr = Integer.parseInt(s.nextLine());
+                String model = s.nextLine();
                 s.nextLine();
-                ArrayList<Plot> plotz = new ArrayList<Plot>();
-                ArrayList<Plot> currplotz = new ArrayList<Plot>();
+                ArrayList<Plot> plotz = new ArrayList<>();
+                ArrayList<Plot> currplotz = new ArrayList<>();
                 while(s.hasNext()){
                     line = s.nextLine();
                     items = Arrays.asList(line.split("\\s*,\\s*"));
                     Location corner = new Location(Bukkit.getWorld(items.get(0)), Integer.parseInt(items.get(1)), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3)));
                     int rotation = Integer.parseInt(items.get(4));
-                    String type = items.get(5);
+                    int sx = Integer.parseInt(items.get(5));
+                    int sz = Integer.parseInt(items.get(6));
+                    String type = items.get(7);
                     boolean assigned;
                     String owner = null;
 //                    System.out.print(type);
@@ -123,25 +169,36 @@ public class DBmanager implements Listener{
                         assigned = true;
                         owner = type;
                     }
-                    Plot p =  new Plot(corner, rotation, assigned, owner);
+                    Plot p =  new Plot(corner, rotation, assigned, owner, sx, sz);
                     plotz.add(p);
                     if(!assigned){
                         currplotz.add(p);
-                    }else if(BuildPastPlots || isCurrent){
+                    }else if(isCurrent){
                         if(DBmanager.plots.containsKey(owner)){
                             ArrayList<Plot> ps = DBmanager.plots.get(owner);
                             ps.add(p);
                             DBmanager.plots.put(owner, ps);
                         }else{
-                            ArrayList<Plot> ps = new ArrayList<Plot>();
+                            ArrayList<Plot> ps = new ArrayList<>();
                             ps.add(p);
                             DBmanager.plots.put(owner, ps);
                         }
+                    }else{
+                        if(DBmanager.pastPlots.containsKey(owner)){
+                            ArrayList<Plot> ps = DBmanager.pastPlots.get(owner);
+                            ps.add(p);
+                            DBmanager.pastPlots.put(owner, ps);
+                        }else{
+                            ArrayList<Plot> ps = new ArrayList<>();
+                            ps.add(p);
+                            DBmanager.pastPlots.put(owner, ps);
+                        }
                     }
                 }
-                Theme t = new Theme(name, cent, plotz, currplotz, xl, xr);
+                Theme t = new Theme(name, cent, plotz, currplotz, xl, xr, model);
                 if(t.getTheme().equalsIgnoreCase(curr1)){
                     DBmanager.curr = t;
+                    currModel = loadPlotModel(model);
                 }
                 DBmanager.Themes.put(t.getTheme(), t);
             } catch (FileNotFoundException ex) {
