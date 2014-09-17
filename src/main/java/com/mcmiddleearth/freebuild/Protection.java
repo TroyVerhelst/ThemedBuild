@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -74,8 +75,17 @@ public final class Protection implements Listener{
                 }
             }
         }
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+//            p.sendMessage(pPlots.toString());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
+                }
+            }
+        }
         if(!canBuild){
-//            if(!p.hasPermission("plotmanager.create"))
+            if(!p.hasPermission("plotmanager.create"))
                 event.setCancelled(true);
         }
     }
@@ -92,8 +102,17 @@ public final class Protection implements Listener{
                 }
             }
         }
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+//            p.sendMessage(pPlots.toString());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
+                }
+            }
+        }
         if(!canBuild){
-//            if(!p.hasPermission("plotmanager.create"))
+            if(!p.hasPermission("plotmanager.create"))
                 e.setCancelled(true);
         }
     }
@@ -114,6 +133,22 @@ public final class Protection implements Listener{
     }
     @EventHandler
     public void onPlayerInteractBlock(PlayerInteractEvent e){
+        if(!e.isCancelled() && e.getPlayer().hasPermission("plotmanager.create") && DBmanager.IncompleteModel != null
+                && e.getPlayer().getItemInHand().getType() == DBmanager.ModelTool && e.hasBlock()){
+            Action action = e.getAction();
+            if(action == Action.LEFT_CLICK_BLOCK){
+                DBmanager.IncompleteModel.setPoint1(e.getClickedBlock().getLocation());
+                e.getPlayer().sendMessage(Freebuild.prefix + "First point set");
+                e.setCancelled(true);
+                return;
+            }
+            else if(action == Action.RIGHT_CLICK_BLOCK){
+                DBmanager.IncompleteModel.setPoint2(e.getClickedBlock().getLocation());
+                e.getPlayer().sendMessage(Freebuild.prefix + "Second point set");
+                e.setCancelled(true);
+                return;
+            }
+        }
         if(DBmanager.curr == null || !e.hasBlock() || !e.getClickedBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
             return;
         }
@@ -157,6 +192,20 @@ public final class Protection implements Listener{
             }
         }
     }
+    private boolean isInPastPlot(Block b){
+        Location ploc=b.getLocation();
+        Set<String> keys = DBmanager.pastPlots.keySet();
+        List<Plot> pPlots;
+        for(String k : keys){
+            pPlots = DBmanager.pastPlots.get(k);
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     private boolean isInPlot(Block b){
         Location ploc=b.getLocation();
         Set<String> keys = DBmanager.plots.keySet();
@@ -169,7 +218,7 @@ public final class Protection implements Listener{
                 }
             }
         }
-        return false;
+        return (DBmanager.BuildPastPlots && isInPastPlot(b));
     }
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent e){

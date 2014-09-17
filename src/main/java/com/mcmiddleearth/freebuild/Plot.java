@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
@@ -124,12 +125,12 @@ public class Plot {
                 lc.getBlock().setType(Material.DOUBLE_STEP);
             }
             new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DOUBLE_STEP);
-            DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
     }
     public void assign(Player p){
         DBmanager.curr.getCurrplots().remove(this);
         this.p = p.getName();
         assigned = true;
+        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
 //        DBmanager.curr.getPlots().put(p.getName(), this);
         if(DBmanager.plots.containsKey(p.getName())){
             ArrayList<Plot> ps = DBmanager.plots.get(p.getName());
@@ -142,18 +143,43 @@ public class Plot {
         }
         if(rotation == 1 || rotation == 4){
             new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
-            plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+2, corner.getBlockZ()).getBlock();
-            plotsign.setType(Material.SIGN_POST);
+            if(rotation == 1){
+                plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()-1).getBlock();
+                plotsign.setType(Material.WALL_SIGN);
+            }else if(rotation == 4){
+                plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()+1).getBlock();
+                plotsign.setType(Material.WALL_SIGN);
+            }
     
         }else if(rotation == 2 || rotation == 3){
             new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
-            plotsign = new Location(w, corner.getBlockX()-1, corner.getBlockY()+2, corner.getBlockZ()).getBlock(); 
-            plotsign.setType(Material.SIGN_POST);    
+            if(rotation == 2){
+                plotsign = new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()-1).getBlock();
+                plotsign.setType(Material.WALL_SIGN);
+            }else if(rotation == 3){
+                plotsign = new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()+1).getBlock();
+                plotsign.setType(Material.WALL_SIGN);
+            }
         }
-            Sign plotSign = (Sign)plotsign.getState();
-            plotSign.setLine(0, ChatColor.RED + "[ThemedBuild]");
-            plotSign.setLine(1, ChatColor.AQUA + DBmanager.curr.getTheme());
-            plotSign.setLine(2, ChatColor.GREEN + p.getName());
-            plotSign.update();
+        Sign plotSign = (Sign)plotsign.getState();
+        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.WALL_SIGN);
+        if(rotation == 1 || rotation == 2){
+            s.setFacingDirection(BlockFace.NORTH);
+        }else{
+            s.setFacingDirection(BlockFace.SOUTH);
+        }
+        plotSign.setData(s);
+        plotSign.setLine(0, ChatColor.RED + "[ThemedBuild]");
+        plotSign.setLine(1, ChatColor.AQUA + DBmanager.curr.getTheme());
+        plotSign.setLine(2, ChatColor.GREEN + p.getName());
+        plotSign.update();
+        Location l = new Location(plotsign.getWorld(), plotsign.getX()+0.5, plotsign.getY()-1, plotsign.getZ()+0.5);
+        if(rotation == 1 || rotation == 2){
+            l.setYaw(0);
+        }else{
+            l.setYaw(180);
+        }
+        l.setPitch(0);
+        p.teleport(l);
     }
 }

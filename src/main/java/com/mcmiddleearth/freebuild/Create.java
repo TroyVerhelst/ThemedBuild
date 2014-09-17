@@ -9,6 +9,7 @@ package com.mcmiddleearth.freebuild;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
@@ -27,7 +28,7 @@ import org.bukkit.entity.Player;
 
 /**
  *
- * @author Donovan
+ * @author Donovan, Ivan1pl
  */
 public class Create implements CommandExecutor, ConversationAbandonedListener{
     private final ConversationFactory conversationFactory;
@@ -59,7 +60,6 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     if(!plot.isAssigned()){
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
-                        p.teleport(new Location(plot.getCorner().getWorld(), plot.getCorner().getBlockX(), plot.getCorner().getBlockY()+2, plot.getCorner().getBlockZ()));
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         return true;
                     }
@@ -78,24 +78,40 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 p.sendMessage("Generating...");
                 String tname = "";
                 String modelname = "default";
+                int namebegin = 1;
                 if(args.length == 1){
                     return false;
                 }
                 if(args[1].equals("-m") && args.length > 3){
                     modelname = args[2];
+                    namebegin = 3;
+                    if(!DBmanager.modelExists(modelname)){
+                        p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
+                        p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                        return true;
+                    }
                 }
-                for(String s : Arrays.asList(args).subList(1, args.length)){
+                for(String s : Arrays.asList(args).subList(namebegin, args.length)){
                     tname += s + " ";
                 }
+                tname = tname.trim();
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", modelname);
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr.close();
                 DBmanager.curr = theme;
-                if(!DBmanager.BuildPastPlots){
-                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                Set<String> owners = DBmanager.plots.keySet();
+                for(String s: owners){
+                    ArrayList<Plot> pl = DBmanager.plots.get(s);
+                    if(DBmanager.pastPlots.containsKey(s)){
+                        ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
+                        ppl.addAll(pl);
+                    }else{
+                        DBmanager.pastPlots.put(s, pl);
+                    }
                 }
-                p.teleport(theme.getCent());
+                DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                p.teleport(new Location(theme.getCent().getWorld(), theme.getCent().getX(), theme.getCent().getY()+1, theme.getCent().getZ()));
 //                type = args[0];
 //                ploc = p.getLocation();
 //                conversationFactory.buildConversation((Conversable) sender).begin();
@@ -107,72 +123,103 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
                 String modelname = "default";
+                int namebegin = 1;
                 if(args.length == 1){
                     return false;
                 }
                 if(args[1].equals("-m") && args.length > 3){
                     modelname = args[2];
+                    namebegin = 3;
+                    if(!DBmanager.modelExists(modelname)){
+                        p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
+                        p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                        return true;
+                    }
                 }
-                for(String s : Arrays.asList(args).subList(1, args.length)){
+                for(String s : Arrays.asList(args).subList(namebegin, args.length)){
                     tname += s + " ";
                 }
+                tname = tname.trim();
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);
                 DBmanager.curr = theme;
-                if(!DBmanager.BuildPastPlots){
-                    DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                Set<String> owners = DBmanager.plots.keySet();
+                for(String s: owners){
+                    ArrayList<Plot> pl = DBmanager.plots.get(s);
+                    if(DBmanager.pastPlots.containsKey(s)){
+                        ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
+                        ppl.addAll(pl);
+                    }else{
+                        DBmanager.pastPlots.put(s, pl);
+                    }
                 }
+                DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
                 return true;
             }
-            else if(args[0].equalsIgnoreCase("createmodel")){
+            else if(args[0].equalsIgnoreCase("createmodel") && p.hasPermission("plotmanager.create")){
                 if(args.length == 2){
-                    PlotModel model = new PlotModel(args[1]);
-                    DBmanager.IncompleteModels.put(args[1], model);
+                    DBmanager.IncompleteModel = new PlotModel(args[1]);
                     p.sendMessage(Freebuild.prefix + "Empty model created");
                     return true;
                 }
-                else if(args.length == 3){
-                    if(DBmanager.IncompleteModels.containsKey(args[1])){
-                        PlotModel model = DBmanager.IncompleteModels.get(args[1]);
-                        if(args[2].equalsIgnoreCase("point1")){
-                            model.setPoint1(p.getLocation());
-                            p.sendMessage(Freebuild.prefix + "First point set");
-                            return true;
-                        }
-                        else if(args[2].equalsIgnoreCase("point2")){
-                            model.setPoint2(p.getLocation());
-                            p.sendMessage(Freebuild.prefix + "Second point set");
-                            return true;
-                        }
-                    }
-                }
-                else if(args.length == 4){
-                    if(DBmanager.IncompleteModels.containsKey(args[1])){
-                        PlotModel model = DBmanager.IncompleteModels.get(args[1]);
-                        if(args[2].equalsIgnoreCase("height")){
-                            try{
-                                model.setHeight(Integer.parseInt(args[3]));
-                                p.sendMessage(Freebuild.prefix + "Height set");
-                                return true;
-                            }
-                            catch(NumberFormatException ex){
-                                return false;
-                            }
-                        }
-                    }
-                }
             }
-            else if(args[0].equalsIgnoreCase("savemodel") && args.length == 2){
-                if(DBmanager.IncompleteModels.containsKey(args[1])){
+            else if(args[0].equalsIgnoreCase("savemodel") && args.length == 1 && p.hasPermission("plotmanager.create")){
+                if(DBmanager.IncompleteModel != null){
                     p.sendMessage(Freebuild.prefix + "Saving model");
                     p.sendMessage(Freebuild.prefix + "Please wait...");
-                    PlotModel model = DBmanager.IncompleteModels.get(args[1]);
-                    DBmanager.savePlotModel(model);
-                    DBmanager.IncompleteModels.remove(args[1]);
-                    p.sendMessage(Freebuild.prefix + "Model saved");
+                    DBmanager.savePlotModel(DBmanager.IncompleteModel,p);
                     return true;
                 }
+            }
+            else if(args[0].equalsIgnoreCase("listmodels") && args.length == 1 && p.hasPermission("plotmanager.create")){
+                p.sendMessage(Freebuild.prefix + "Existing models:");
+                String models = "";
+                for(String s: DBmanager.Models){
+                    models += s + " ";
+                }
+                p.sendMessage(models);
+                return true;
+            }
+            else if(args[0].equalsIgnoreCase("help")){
+                if(args.length == 1 || args.length > 2){
+                    return false;
+                }
+                p.sendMessage(Freebuild.prefix + "Displaying help for " + ChatColor.DARK_GREEN + "/theme " + args[1]);
+                if(args[1].equalsIgnoreCase("set")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme set [-m <model>] <name>" + ChatColor.WHITE + " -- start new chain of Themed Builds");
+                    p.sendMessage("If " + ChatColor.DARK_GREEN + "-m <model>" + ChatColor.WHITE + " is not specified, default model is used");
+                    p.sendMessage("To see available models, " + ChatColor.DARK_GREEN + "/theme listmodels");
+                }
+                else if(args[1].equalsIgnoreCase("new")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme new [-m <model>] <name>" + ChatColor.WHITE + " -- create new Themed Build in current chain");
+                    p.sendMessage("If " + ChatColor.DARK_GREEN + "-m <model>" + ChatColor.WHITE + " is not specified, default model is used");
+                    p.sendMessage("To see available models, " + ChatColor.DARK_GREEN + "/theme listmodels");
+                }
+                else if(args[1].equalsIgnoreCase("createmodel")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme createmodel <name>" + ChatColor.WHITE + " -- create empty plot model");
+                    p.sendMessage("Created model is empty, and can't be saved");
+                    p.sendMessage("Use model tool (default is wooden sword, can be changed in config.yml) to set points");
+                    p.sendMessage("While holding model tool, left click on block to set first point, right click to set second point");
+                    p.sendMessage("After both points are set, use " + ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " to save your model");
+                }
+                else if(args[1].equalsIgnoreCase("savemodel")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " -- save current model");
+                    p.sendMessage("Model can't be used before it's saved");
+                }
+                else if(args[1].equalsIgnoreCase("listmodels")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme listmodels" + ChatColor.WHITE + " -- list available models");
+                    p.sendMessage("Only saved models are listed");
+                }
+                else if(args[1].equalsIgnoreCase("help")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme help [subcommand]" + ChatColor.WHITE + " -- view more informations about subcommand");
+                    p.sendMessage("If subcommand is not specified, this command displays general help");
+                }
+                else{
+                    p.sendMessage("Specified subcommand does not exist");
+                    p.sendMessage("Use " + ChatColor.DARK_GREEN + "/theme help" + ChatColor.WHITE + " to see available subcommands");
+                }
+                return true;
             }
         }
         return false;

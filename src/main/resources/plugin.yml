@@ -1,14 +1,20 @@
 name: Freebuild
 main: com.mcmiddleearth.freebuild.Freebuild
-version: 0.1
+version: 1.0
 description: Freebuild controler
 commands:
   theme:
     description: new plot(s)
     usage: |
-            /theme new <name>
-            /theme set <name>
-            /theme
+        §2/theme§f -- claim a plot in current Themed Build
+        
+        Available subcommands:
+        §2/theme help [subcommand]§f -- view more informations about subcommand
+        §2/theme new <name>§f -- create new Themed Build
+        §2/theme set <name>§f -- start new chain of Themed Builds
+        §2/theme createmodel <name>§f -- create empty plot model
+        §2/theme savemodel§f -- save current model
+        §2/theme listmodels§f -- list available models
 permissions:
   plotmanager.create:
     default: op

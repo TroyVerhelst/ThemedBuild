@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,9 +33,11 @@ import org.bukkit.event.world.WorldSaveEvent;
 public class DBmanager implements Listener{
     public static HashMap<String, ArrayList<Plot>> plots = new HashMap<String, ArrayList<Plot>>();
     
+    public static HashMap<String, ArrayList<Plot>> pastPlots = new HashMap<String, ArrayList<Plot>>();
+    
     public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
     
-    public static HashMap<String, PlotModel> IncompleteModels = new HashMap<String, PlotModel>();
+    public static PlotModel IncompleteModel = null;
     
     public static Theme curr;
     
@@ -49,6 +52,10 @@ public class DBmanager implements Listener{
     public static boolean InfinitePlotsPerPlayer;
     
     public static boolean BuildPastPlots;
+    
+    public static Material ModelTool;
+    
+    public static ArrayList<String> Models;
     
     static{
         if(!Theme_dat.exists()){
@@ -97,19 +104,37 @@ public class DBmanager implements Listener{
         }
         Freebuild.getPluginInstance().saveConfig();
     }
-    public static void savePlotModel(PlotModel model){
+    public static void savePlotModel(PlotModel model, Player p){
         File out = new File(Plot_dat + System.getProperty("file.separator") + model.getName().replace(" ", "_") + ".MCplot");
-        model.saveModel(out);
+        model.saveModel(out,p);
+        updateModelsList();
     }
     public static PlotModel loadPlotModel(String name){
         File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
         PlotModel model = new PlotModel(name,in);
         return model;
     }
+    public static void updateModelsList(){
+        Models = new ArrayList<String>();
+        for(File f: Plot_dat.listFiles()){
+            String name = f.getName().replace(".MCplot", "");
+            Models.add(name);
+        }
+    }
+    public static boolean modelExists(String model){
+        for(String s: Models){
+            if(s.equals(model)){
+                return true;
+            }
+        }
+        return false;
+    }
     public static void loadAll(){
         MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
         BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
+        ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
+        updateModelsList();
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
             name = name.replace(".MCtheme", "");
@@ -148,7 +173,7 @@ public class DBmanager implements Listener{
                     plotz.add(p);
                     if(!assigned){
                         currplotz.add(p);
-                    }else if(BuildPastPlots || isCurrent){
+                    }else if(isCurrent){
                         if(DBmanager.plots.containsKey(owner)){
                             ArrayList<Plot> ps = DBmanager.plots.get(owner);
                             ps.add(p);
@@ -157,6 +182,16 @@ public class DBmanager implements Listener{
                             ArrayList<Plot> ps = new ArrayList<Plot>();
                             ps.add(p);
                             DBmanager.plots.put(owner, ps);
+                        }
+                    }else{
+                        if(DBmanager.pastPlots.containsKey(owner)){
+                            ArrayList<Plot> ps = DBmanager.pastPlots.get(owner);
+                            ps.add(p);
+                            DBmanager.pastPlots.put(owner, ps);
+                        }else{
+                            ArrayList<Plot> ps = new ArrayList<Plot>();
+                            ps.add(p);
+                            DBmanager.pastPlots.put(owner, ps);
                         }
                     }
                 }

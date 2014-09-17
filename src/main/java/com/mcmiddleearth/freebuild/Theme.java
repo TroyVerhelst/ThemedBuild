@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.material.Stairs;
 
 /**
@@ -42,7 +45,7 @@ public class Theme {
         int sizez2 = DBmanager.curr.plots.get(0).getSizeZ();
         this.theme = name;
         this.model = model;
-        Location ocent = DBmanager.curr.getCent();
+        Location ocent = DBmanager.curr.getCent().clone();
         ocent.add(0, 0, sizez+sizez2+13);
         this.cent=ocent;
         this.Generate();
@@ -61,6 +64,26 @@ public class Theme {
         this.currplots.addAll(currs);
         this.x_left = xl;
         this.x_right = xr;
+    }
+    private void genSign(BlockFace face){
+        Location l = getCent().clone();
+        if(face == BlockFace.EAST){
+            l.subtract(3, -1, 0);
+        }
+        else if(face == BlockFace.WEST){
+            l.add(3, 1, 0);
+        }
+        Block sign = l.getBlock();
+        sign.setType(Material.SIGN_POST);
+        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.SIGN_POST);
+        s.setFacingDirection(face);
+        sign.setType(Material.SIGN_POST);
+        Sign plotSign = (Sign) sign.getState();
+        plotSign.setData(s);
+        plotSign.setLine(0, ChatColor.BOLD + "Main");
+        plotSign.setLine(1, ChatColor.BOLD + "ThemedBuild");
+        plotSign.setLine(2, theme);
+        plotSign.update();
     }
     private void Generate(){
         int sizez = DBmanager.currModel.getSizez()+1;
@@ -87,10 +110,45 @@ public class Theme {
             state.setData(stairs);
             state.update(true);
         }
+        genSign(BlockFace.EAST);
+        genSign(BlockFace.WEST);
         this.genPlots(true);
     }
+    private void genGate(World w, int x, int y, int z, BlockFace direction){
+        new Location(w,x,y,z+1).getBlock().setType(Material.FENCE);
+        new Location(w,x,y,z+2).getBlock().setType(Material.FENCE);
+        new Location(w,x,y+1,z+1).getBlock().setType(Material.FENCE);
+        new Location(w,x,y+1,z+2).getBlock().setType(Material.FENCE);
+        new Location(w,x,y,z-1).getBlock().setType(Material.FENCE);
+        new Location(w,x,y,z-2).getBlock().setType(Material.FENCE);
+        new Location(w,x,y+1,z-1).getBlock().setType(Material.FENCE);
+        new Location(w,x,y+1,z-2).getBlock().setType(Material.FENCE);
+        new Location(w,x,y+2,z+1).getBlock().setType(Material.FENCE);
+        new Location(w,x,y+2,z).getBlock().setType(Material.FENCE);
+        new Location(w,x,y+2,z-1).getBlock().setType(Material.FENCE);
+        Block sign;
+        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.WALL_SIGN);
+        if(direction == BlockFace.EAST){
+            sign = new Location(w,x+1,y+2,z).getBlock();
+        }
+        else if(direction == BlockFace.WEST){
+            sign = new Location(w,x-1,y+2,z).getBlock();
+        }
+        else{
+            return;
+        }
+        s.setFacingDirection(direction);
+        sign.setType(Material.WALL_SIGN);
+        Sign plotSign = (Sign) sign.getState();
+        plotSign.setData(s);
+        plotSign.setLine(0, "");
+        plotSign.setLine(1, ChatColor.RED + "Closed");
+        plotSign.update();
+    }
     public void close(){
-        
+        genGate(getCent().getWorld(), getCent().getBlockX()-3, getCent().getBlockY()+1, getCent().getBlockZ(), BlockFace.EAST);
+        genGate(getCent().getWorld(), getCent().getBlockX()+3, getCent().getBlockY()+1, getCent().getBlockZ(), BlockFace.WEST);
+        DBmanager.save();
     }
     public void genPlots(boolean first){
         Bukkit.getServer().broadcastMessage(Freebuild.prefix + "Generating new plots, Lag incoming");

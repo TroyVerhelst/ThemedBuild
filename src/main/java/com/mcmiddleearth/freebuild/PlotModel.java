@@ -10,14 +10,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
@@ -43,24 +50,26 @@ public class PlotModel {
     public PlotModel(String modelname, File in){
         name = modelname;
         try {
-            FileInputStream fis = new FileInputStream(in);
-            BukkitObjectInputStream stream = new BukkitObjectInputStream(fis);
-            sizex = stream.readInt();
-            sizey = stream.readInt();
-            sizez = stream.readInt();
-            model = new ItemStack[sizex][sizey][sizez];
+            Scanner stream = new Scanner(in);
+            sizex = Integer.parseInt(stream.nextLine());
+            sizey = Integer.parseInt(stream.nextLine());
+            sizez = Integer.parseInt(stream.nextLine());
+            if(sizex == 0 || sizey == 0 || sizez == 0){
+                model = null;
+            }
+            else{
+                model = new ItemStack[sizex][sizey][sizez];
+            }
             for(int x = 0; x < sizex; ++x){
                 for(int y = 0; y < sizey; ++y){
                     for(int z = 0; z < sizez; ++z){
-                        model[x][y][z] = (ItemStack) stream.readObject();
+                        Material mat = Material.getMaterial(stream.nextLine());
+                        model[x][y][z] = new ItemStack(mat,1,Short.parseShort(stream.nextLine()));
                     }
                 }
             }
             stream.close();
-            fis.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -70,17 +79,19 @@ public class PlotModel {
     public void setPoint2(Location l){
         point2 = new Location(l.getWorld(),l.getBlockX(),l.getBlockY(),l.getBlockZ());
     }
-    public void setHeight(int h){
-        sizey = h;
-    }
-    public void saveModel(File out){
-        if(point1 != null && point2 != null && sizey > 0 && point1.getWorld().getName().equals(point2.getWorld().getName())){
+    public void saveModel(File out, Player p){
+        if(point1 != null && point2 != null && point1.getWorld().getName().equals(point2.getWorld().getName())){
             sizex = Math.abs(point1.getBlockX()-point2.getBlockX())+1;
+            sizey = Math.abs(point1.getBlockY()-point2.getBlockY())+1;
             sizez = Math.abs(point1.getBlockZ()-point2.getBlockZ())+1;
             model = new ItemStack[sizex][sizey][sizez];
             Location corner = new Location(point1.getWorld(), Math.min(point1.getBlockX(), point2.getBlockX()),
-                    point1.getBlockY()-1, Math.min(point1.getBlockZ(), point2.getBlockZ()));
+                                                              Math.min(point1.getBlockY(), point2.getBlockY()),
+                                                              Math.min(point1.getBlockZ(), point2.getBlockZ()));
             Location iter;
+            if(p != null){
+                p.sendMessage(Freebuild.prefix + "Getting blocks...");
+            }
             for(int x = 0; x < sizex; ++x){
                 for(int y = 0; y < sizey; ++y){
                     for(int z = 0; z < sizez; ++z){
@@ -89,26 +100,45 @@ public class PlotModel {
                     }
                 }
             }
-        }
-        try {
-            FileOutputStream fos = new FileOutputStream(out);
-            BukkitObjectOutputStream stream = new BukkitObjectOutputStream(fos);
-            stream.writeInt(sizex);
-            stream.writeInt(sizey);
-            stream.writeInt(sizez);
-            for(int x = 0; x < sizex; ++x){
-                for(int y = 0; y < sizey; ++y){
-                    for(int z = 0; z < sizez; ++z){
-                        stream.writeObject(model[x][y][z]);
+            if(p != null){
+                p.sendMessage(Freebuild.prefix + "Done");
+            }
+            if(p != null){
+                p.sendMessage(Freebuild.prefix + "Saving model...");
+            }
+            try {
+                FileWriter fos = new FileWriter(out);
+                PrintWriter stream = new PrintWriter(fos);
+                stream.println(sizex);
+                stream.println(sizey);
+                stream.println(sizez);
+                for(int x = 0; x < sizex; ++x){
+                    for(int y = 0; y < sizey; ++y){
+                        for(int z = 0; z < sizez; ++z){
+                            stream.println(model[x][y][z].getType().toString());
+                            stream.println(model[x][y][z].getDurability());
+                        }
+                    }
+                    if(p != null){
+                        int pc = ((x+1)*sizey*sizez*100)/(sizex*sizey*sizez);
+                        p.sendMessage(Freebuild.prefix + "Saving model... " + Integer.toString(pc) + "%");
                     }
                 }
+                if(p != null){
+                    p.sendMessage(Freebuild.prefix + "Done");
+                }
+                stream.close();
+                fos.close();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
             }
-            stream.close();
-            fos.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        else{
+            if(p != null){
+                p.sendMessage(Freebuild.prefix + "You have to set both points");
+            }
         }
     }
     public void generate(Location l){
@@ -128,18 +158,11 @@ public class PlotModel {
     }
     public static void generateDefaultModel(File out){
         try {
-            FileOutputStream fos = new FileOutputStream(out);
-            BukkitObjectOutputStream stream = new BukkitObjectOutputStream(fos);
-            stream.writeInt(48);
-            stream.writeInt(1);
-            stream.writeInt(48);
-            for(int x = 0; x < 48; ++x){
-                for(int y = 0; y < 1; ++y){
-                    for(int z = 0; z < 48; ++z){
-                        stream.writeObject(new ItemStack(Material.GRASS));
-                    }
-                }
-            }
+            FileWriter fos = new FileWriter(out);
+            PrintWriter stream = new PrintWriter(fos);
+            stream.println(48);
+            stream.println(0);
+            stream.println(48);
             stream.close();
             fos.close();
         } catch (FileNotFoundException ex) {
