@@ -79,6 +79,7 @@ public class DBmanager implements Listener{
                     writer.println(curr.getX_left());
                     writer.println(curr.getX_right());
                     writer.println(curr.getModel());
+                    writer.println(curr.getURL());
                     writer.println("Plots:");
                     System.out.println(curr.getPlots().toString());
                     for(Plot p : curr.getPlots()){

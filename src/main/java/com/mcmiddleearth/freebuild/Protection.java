@@ -55,7 +55,7 @@ public final class Protection implements Listener{
                 if (mat == Material.SIGN_POST && p.hasPermission("plotmanager.create")){
                     p.sendMessage(ChatColor.RED + "[PlotManager] removed plotsign!");
                 }
-                else if (mat == Material.SIGN_POST) {
+                else if (mat == Material.SIGN) {
                     p.sendMessage(ChatColor.RED + "[PlotManager] no permission for that! ask staff to un-claim your plot!");
                     event.setCancelled(true);
                 }

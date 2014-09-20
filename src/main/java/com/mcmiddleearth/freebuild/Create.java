@@ -33,6 +33,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class Create implements CommandExecutor, ConversationAbandonedListener{
     private final ConversationFactory conversationFactory;
     
+    public String tname;
     public String type;
     private Location ploc;
     
@@ -61,6 +62,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "Click on the link for more information about the theme: "+ ChatColor.GRAY + DBmanager.curr.getURL());
                         return true;
                     }
                 }
@@ -70,12 +72,13 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         plot.assign(p);
                         p.teleport(plot.getCorner());
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: " + DBmanager.curr.getURL());
                         return true;
                     }
                 }
             }else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
                 //create new theme
-                p.sendMessage("Generating...");
+                p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
                 String modelname = "default";
                 int namebegin = 1;
@@ -143,7 +146,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);
-                DBmanager.curr.close();
+                if(DBmanager.curr != null) {
+                    DBmanager.curr.close();
+                }
                 DBmanager.curr = theme;
                 Set<String> owners = DBmanager.plots.keySet();
                 for(String s: owners){
@@ -226,6 +231,10 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage("Specified subcommand does not exist");
                     p.sendMessage("Use " + ChatColor.DARK_GREEN + "/theme help" + ChatColor.WHITE + " to see available subcommands");
                 }
+                return true;
+            } else if(args[0].equalsIgnoreCase("setURL")&&p.hasPermission("plotmanager.setURL")){
+                DBmanager.curr.setURL(args[1]);
+                p.sendMessage(Freebuild.prefix + "Theme URL set to: " + ChatColor.GRAY + args[1]);
                 return true;
             }
         }

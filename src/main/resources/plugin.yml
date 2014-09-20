@@ -15,6 +15,7 @@ commands:
         §2/theme createmodel <name>§f -- create empty plot model
         §2/theme savemodel§f -- save current model
         §2/theme listmodels§f -- list available models
+        §2/theme setURL§f -- set the URL for the themedbuild
 permissions:
   plotmanager.create:
     default: op
