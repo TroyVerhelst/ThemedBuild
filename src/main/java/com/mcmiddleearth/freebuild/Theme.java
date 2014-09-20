@@ -8,6 +8,7 @@ package com.mcmiddleearth.freebuild;
 
 import java.util.ArrayList;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,6 +39,8 @@ public class Theme {
     private int x_right;
     @Getter
     private String model;
+    @Getter @Setter
+    private String URL = "null";
     
     public Theme(String name, String url, String model){
         int sizez = DBmanager.currModel.getSizez();

@@ -33,6 +33,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class Create implements CommandExecutor, ConversationAbandonedListener{
     private final ConversationFactory conversationFactory;
     
+    public String tname;
     public String type;
     private Location ploc;
     
@@ -61,6 +62,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: "+ ChatColor.GRAY + DBmanager.curr.getURL());
                         return true;
                     }
                 }
@@ -70,12 +72,13 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         plot.assign(p);
                         p.teleport(plot.getCorner());
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: " + ChatColor.GRAY + DBmanager.curr.getURL());
                         return true;
                     }
                 }
             }else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
                 //create new theme
-                p.sendMessage("Generating...");
+                p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
                 String modelname = "default";
                 int namebegin = 1;
@@ -143,7 +146,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);
-                DBmanager.curr.close();
+                if(DBmanager.curr != null) {
+                    DBmanager.curr.close();
+                }
                 DBmanager.curr = theme;
                 Set<String> owners = DBmanager.plots.keySet();
                 for(String s: owners){
@@ -168,6 +173,25 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     tmet.setLore(Arrays.asList(new String[] {"Use this tool to set plot corners", "Right Click - set point 1", "Left click - set point 2"}));
                     tool.setItemMeta(tmet);
                     p.getInventory().setItem(0, tool);
+                    return true;
+                }
+            }
+            else if(args[0].equalsIgnoreCase("deletemodel") && p.hasPermission("plotmanager.create")){
+                if(args.length >= 2){
+                    if(!DBmanager.modelExists(args[1])){
+                        p.sendMessage(Freebuild.prefix + "Model '"+args[1]+"' doesn't exist");
+                        return true;
+                    }
+                    if(args[1].equals("default")){
+                        p.sendMessage(Freebuild.prefix + "Default model can't be deleted");
+                        return true;
+                    }
+                    if(DBmanager.currModel != null && args[1].equals(DBmanager.currModel.getName())){
+                        p.sendMessage(Freebuild.prefix + "Model currently in use, can't be deleted");
+                        return true;
+                    }
+                    DBmanager.deletePlotModel(args[1]);
+                    p.sendMessage(Freebuild.prefix + "Model '"+args[1]+"' deleted");
                     return true;
                 }
             }
@@ -210,6 +234,12 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage("While holding model tool, left click on block to set first point, right click to set second point");
                     p.sendMessage("After both points are set, use " + ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " to save your model");
                 }
+                else if(args[1].equalsIgnoreCase("deletemodel")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme deletemodel <name>" + ChatColor.WHITE + " -- delete plot model");
+                    p.sendMessage("Only saved models can be deleted");
+                    p.sendMessage("Default model can't be deleted (model name: default)");
+                    p.sendMessage("If model is currently in use, it will not be deleted");
+                }
                 else if(args[1].equalsIgnoreCase("savemodel")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " -- save current model");
                     p.sendMessage("Model can't be used before it's saved");
@@ -222,10 +252,18 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme help [subcommand]" + ChatColor.WHITE + " -- view more informations about subcommand");
                     p.sendMessage("If subcommand is not specified, this command displays general help");
                 }
+                else if(args[1].equalsIgnoreCase("setURL")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme setURL <url>" + ChatColor.WHITE + " -- set the URL for the themedbuild");
+                    p.sendMessage("URL is displayed when player claims a plot");
+                }
                 else{
                     p.sendMessage("Specified subcommand does not exist");
                     p.sendMessage("Use " + ChatColor.DARK_GREEN + "/theme help" + ChatColor.WHITE + " to see available subcommands");
                 }
+                return true;
+            } else if(args[0].equalsIgnoreCase("setURL")&&p.hasPermission("plotmanager.create") && args.length >= 2){
+                DBmanager.curr.setURL(args[1]);
+                p.sendMessage(Freebuild.prefix + "Theme URL set to: " + ChatColor.GRAY + args[1]);
                 return true;
             }
         }
