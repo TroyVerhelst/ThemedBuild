@@ -31,11 +31,11 @@ import org.bukkit.event.world.WorldSaveEvent;
  * @author Donovan
  */
 public class DBmanager implements Listener{
-    public static HashMap<String, ArrayList<Plot>> plots = new HashMap<String, ArrayList<Plot>>();
+    public static HashMap<String, ArrayList<Plot>> plots = new HashMap<>();
     
-    public static HashMap<String, ArrayList<Plot>> pastPlots = new HashMap<String, ArrayList<Plot>>();
+    public static HashMap<String, ArrayList<Plot>> pastPlots = new HashMap<>();
     
-    public static HashMap<String, Theme> Themes = new HashMap<String, Theme>();
+    public static HashMap<String, Theme> Themes = new HashMap<>();
     
     public static PlotModel IncompleteModel = null;
     
@@ -79,6 +79,7 @@ public class DBmanager implements Listener{
                     writer.println(curr.getX_left());
                     writer.println(curr.getX_right());
                     writer.println(curr.getModel());
+                    writer.println(curr.getURL());
                     writer.println("Plots:");
                     System.out.println(curr.getPlots().toString());
                     for(Plot p : curr.getPlots()){
@@ -115,7 +116,7 @@ public class DBmanager implements Listener{
         return model;
     }
     public static void updateModelsList(){
-        Models = new ArrayList<String>();
+        Models = new ArrayList<>();
         for(File f: Plot_dat.listFiles()){
             String name = f.getName().replace(".MCplot", "");
             Models.add(name);
@@ -150,8 +151,8 @@ public class DBmanager implements Listener{
                 int xr = Integer.parseInt(s.nextLine());
                 String model = s.nextLine();
                 s.nextLine();
-                ArrayList<Plot> plotz = new ArrayList<Plot>();
-                ArrayList<Plot> currplotz = new ArrayList<Plot>();
+                ArrayList<Plot> plotz = new ArrayList<>();
+                ArrayList<Plot> currplotz = new ArrayList<>();
                 while(s.hasNext()){
                     line = s.nextLine();
                     items = Arrays.asList(line.split("\\s*,\\s*"));
@@ -179,7 +180,7 @@ public class DBmanager implements Listener{
                             ps.add(p);
                             DBmanager.plots.put(owner, ps);
                         }else{
-                            ArrayList<Plot> ps = new ArrayList<Plot>();
+                            ArrayList<Plot> ps = new ArrayList<>();
                             ps.add(p);
                             DBmanager.plots.put(owner, ps);
                         }
@@ -189,7 +190,7 @@ public class DBmanager implements Listener{
                             ps.add(p);
                             DBmanager.pastPlots.put(owner, ps);
                         }else{
-                            ArrayList<Plot> ps = new ArrayList<Plot>();
+                            ArrayList<Plot> ps = new ArrayList<>();
                             ps.add(p);
                             DBmanager.pastPlots.put(owner, ps);
                         }

@@ -7,8 +7,8 @@
 package com.mcmiddleearth.freebuild;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -30,15 +30,17 @@ public class Theme {
     @Getter
     private Location cent;
     @Getter
-    private ArrayList<Plot> plots = new ArrayList<Plot>();
+    private ArrayList<Plot> plots = new ArrayList<>();
     @Getter
-    private ArrayList<Plot> currplots = new ArrayList<Plot>();
+    private ArrayList<Plot> currplots = new ArrayList<>();
     @Getter
     private int x_left;
     @Getter
     private int x_right;
     @Getter
     private String model;
+    @Getter @Setter
+    private String URL;
     
     public Theme(String name, String url, String model){
         int sizez = DBmanager.currModel.getSizez();

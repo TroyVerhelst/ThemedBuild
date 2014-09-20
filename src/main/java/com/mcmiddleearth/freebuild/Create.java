@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -25,6 +23,8 @@ import org.bukkit.conversations.MessagePrompt;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  *
@@ -33,6 +33,7 @@ import org.bukkit.entity.Player;
 public class Create implements CommandExecutor, ConversationAbandonedListener{
     private final ConversationFactory conversationFactory;
     
+    public String tname;
     public String type;
     private Location ploc;
     
@@ -61,6 +62,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "Click on the link for more information about the theme: "+ ChatColor.GRAY + DBmanager.curr.getURL());
                         return true;
                     }
                 }
@@ -70,12 +72,13 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         plot.assign(p);
                         p.teleport(plot.getCorner());
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
+                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: " + DBmanager.curr.getURL());
                         return true;
                     }
                 }
             }else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
                 //create new theme
-                p.sendMessage("Generating...");
+                p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
                 String modelname = "default";
                 int namebegin = 1;
@@ -110,7 +113,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         DBmanager.pastPlots.put(s, pl);
                     }
                 }
-                DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                DBmanager.plots = new HashMap<>();
                 p.teleport(new Location(theme.getCent().getWorld(), theme.getCent().getX(), theme.getCent().getY()+1, theme.getCent().getZ()));
 //                type = args[0];
 //                ploc = p.getLocation();
@@ -143,6 +146,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);
+                if(DBmanager.curr != null) {
+                    DBmanager.curr.close();
+                }
                 DBmanager.curr = theme;
                 Set<String> owners = DBmanager.plots.keySet();
                 for(String s: owners){
@@ -154,17 +160,23 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         DBmanager.pastPlots.put(s, pl);
                     }
                 }
-                DBmanager.plots = new HashMap<String, ArrayList<Plot>>();
+                DBmanager.plots = new HashMap<>();
                 return true;
             }
             else if(args[0].equalsIgnoreCase("createmodel") && p.hasPermission("plotmanager.create")){
-                if(args.length == 2){
+                if(args.length >= 2){
                     DBmanager.IncompleteModel = new PlotModel(args[1]);
                     p.sendMessage(Freebuild.prefix + "Empty model created");
+                    ItemStack tool = new ItemStack(DBmanager.ModelTool);
+                    ItemMeta tmet = tool.getItemMeta();
+                    tmet.setDisplayName("Model Selector");
+                    tmet.setLore(Arrays.asList(new String[] {"Use this tool to set plot corners", "Right Click - set point 1", "Left click - set point 2"}));
+                    tool.setItemMeta(tmet);
+                    p.getInventory().setItem(0, tool);
                     return true;
                 }
             }
-            else if(args[0].equalsIgnoreCase("savemodel") && args.length == 1 && p.hasPermission("plotmanager.create")){
+            else if(args[0].equalsIgnoreCase("savemodel") && args.length >= 1 && p.hasPermission("plotmanager.create")){
                 if(DBmanager.IncompleteModel != null){
                     p.sendMessage(Freebuild.prefix + "Saving model");
                     p.sendMessage(Freebuild.prefix + "Please wait...");
@@ -172,7 +184,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     return true;
                 }
             }
-            else if(args[0].equalsIgnoreCase("listmodels") && args.length == 1 && p.hasPermission("plotmanager.create")){
+            else if(args[0].equalsIgnoreCase("listmodels") && args.length >= 1 && p.hasPermission("plotmanager.create")){
                 p.sendMessage(Freebuild.prefix + "Existing models:");
                 String models = "";
                 for(String s: DBmanager.Models){
@@ -182,7 +194,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 return true;
             }
             else if(args[0].equalsIgnoreCase("help")){
-                if(args.length == 1 || args.length > 2){
+                if(args.length == 1){
                     return false;
                 }
                 p.sendMessage(Freebuild.prefix + "Displaying help for " + ChatColor.DARK_GREEN + "/theme " + args[1]);
@@ -219,6 +231,10 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage("Specified subcommand does not exist");
                     p.sendMessage("Use " + ChatColor.DARK_GREEN + "/theme help" + ChatColor.WHITE + " to see available subcommands");
                 }
+                return true;
+            } else if(args[0].equalsIgnoreCase("setURL")&&p.hasPermission("plotmanager.setURL")){
+                DBmanager.curr.setURL(args[1]);
+                p.sendMessage(Freebuild.prefix + "Theme URL set to: " + ChatColor.GRAY + args[1]);
                 return true;
             }
         }

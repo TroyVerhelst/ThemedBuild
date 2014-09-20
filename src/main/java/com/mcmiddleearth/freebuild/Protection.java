@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
@@ -56,7 +55,7 @@ public final class Protection implements Listener{
                 if (mat == Material.SIGN_POST && p.hasPermission("plotmanager.create")){
                     p.sendMessage(ChatColor.RED + "[PlotManager] removed plotsign!");
                 }
-                else if (mat == Material.SIGN_POST) {
+                else if (mat == Material.SIGN) {
                     p.sendMessage(ChatColor.RED + "[PlotManager] no permission for that! ask staff to un-claim your plot!");
                     event.setCancelled(true);
                 }
