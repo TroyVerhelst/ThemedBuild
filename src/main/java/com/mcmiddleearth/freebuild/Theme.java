@@ -40,7 +40,7 @@ public class Theme {
     @Getter
     private String model;
     @Getter @Setter
-    private String URL;
+    private String URL = "null";
     
     public Theme(String name, String url, String model){
         int sizez = DBmanager.currModel.getSizez();

@@ -110,6 +110,12 @@ public class DBmanager implements Listener{
         model.saveModel(out,p);
         updateModelsList();
     }
+    public static void deletePlotModel(String name){
+        File f = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
+        if(f.exists()){
+            f.delete();
+        }
+    }
     public static PlotModel loadPlotModel(String name){
         File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
         PlotModel model = new PlotModel(name,in);
@@ -150,6 +156,7 @@ public class DBmanager implements Listener{
                 int xl = Integer.parseInt(s.nextLine());
                 int xr = Integer.parseInt(s.nextLine());
                 String model = s.nextLine();
+                String url = s.nextLine();
                 s.nextLine();
                 ArrayList<Plot> plotz = new ArrayList<>();
                 ArrayList<Plot> currplotz = new ArrayList<>();
@@ -197,6 +204,7 @@ public class DBmanager implements Listener{
                     }
                 }
                 Theme t = new Theme(name, cent, plotz, currplotz, xl, xr, model);
+                t.setURL(url);
                 if(t.getTheme().equalsIgnoreCase(curr1)){
                     DBmanager.curr = t;
                     currModel = loadPlotModel(model);

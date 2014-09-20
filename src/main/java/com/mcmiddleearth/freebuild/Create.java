@@ -62,7 +62,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
-                        p.sendMessage(Freebuild.prefix + "Click on the link for more information about the theme: "+ ChatColor.GRAY + DBmanager.curr.getURL());
+                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: "+ ChatColor.GRAY + DBmanager.curr.getURL());
                         return true;
                     }
                 }
@@ -72,7 +72,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         plot.assign(p);
                         p.teleport(plot.getCorner());
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
-                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: " + DBmanager.curr.getURL());
+                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: " + ChatColor.GRAY + DBmanager.curr.getURL());
                         return true;
                     }
                 }
@@ -176,6 +176,25 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     return true;
                 }
             }
+            else if(args[0].equalsIgnoreCase("deletemodel") && p.hasPermission("plotmanager.create")){
+                if(args.length >= 2){
+                    if(!DBmanager.modelExists(args[1])){
+                        p.sendMessage(Freebuild.prefix + "Model '"+args[1]+"' doesn't exist");
+                        return true;
+                    }
+                    if(args[1].equals("default")){
+                        p.sendMessage(Freebuild.prefix + "Default model can't be deleted");
+                        return true;
+                    }
+                    if(DBmanager.currModel != null && args[1].equals(DBmanager.currModel.getName())){
+                        p.sendMessage(Freebuild.prefix + "Model currently in use, can't be deleted");
+                        return true;
+                    }
+                    DBmanager.deletePlotModel(args[1]);
+                    p.sendMessage(Freebuild.prefix + "Model '"+args[1]+"' deleted");
+                    return true;
+                }
+            }
             else if(args[0].equalsIgnoreCase("savemodel") && args.length >= 1 && p.hasPermission("plotmanager.create")){
                 if(DBmanager.IncompleteModel != null){
                     p.sendMessage(Freebuild.prefix + "Saving model");
@@ -215,6 +234,12 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage("While holding model tool, left click on block to set first point, right click to set second point");
                     p.sendMessage("After both points are set, use " + ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " to save your model");
                 }
+                else if(args[1].equalsIgnoreCase("deletemodel")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme deletemodel <name>" + ChatColor.WHITE + " -- delete plot model");
+                    p.sendMessage("Only saved models can be deleted");
+                    p.sendMessage("Default model can't be deleted (model name: default)");
+                    p.sendMessage("If model is currently in use, it will not be deleted");
+                }
                 else if(args[1].equalsIgnoreCase("savemodel")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " -- save current model");
                     p.sendMessage("Model can't be used before it's saved");
@@ -227,12 +252,16 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme help [subcommand]" + ChatColor.WHITE + " -- view more informations about subcommand");
                     p.sendMessage("If subcommand is not specified, this command displays general help");
                 }
+                else if(args[1].equalsIgnoreCase("setURL")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme setURL <url>" + ChatColor.WHITE + " -- set the URL for the themedbuild");
+                    p.sendMessage("URL is displayed when player claims a plot");
+                }
                 else{
                     p.sendMessage("Specified subcommand does not exist");
                     p.sendMessage("Use " + ChatColor.DARK_GREEN + "/theme help" + ChatColor.WHITE + " to see available subcommands");
                 }
                 return true;
-            } else if(args[0].equalsIgnoreCase("setURL")&&p.hasPermission("plotmanager.setURL")){
+            } else if(args[0].equalsIgnoreCase("setURL")&&p.hasPermission("plotmanager.create") && args.length >= 2){
                 DBmanager.curr.setURL(args[1]);
                 p.sendMessage(Freebuild.prefix + "Theme URL set to: " + ChatColor.GRAY + args[1]);
                 return true;
