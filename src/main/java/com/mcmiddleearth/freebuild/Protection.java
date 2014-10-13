@@ -125,29 +125,11 @@ public final class Protection implements Listener{
         blockPlaceProtect(b,p,e);
         if(!e.isCancelled() && b.getType() == Material.BED_BLOCK){
             b = b.getRelative(((Bed) b.getState().getData()).getFacing());
-            if(b.isEmpty()){
-                blockPlaceProtect(b,p,e);
-            }
+            blockPlaceProtect(b,p,e);
         }
     }
     @EventHandler
     public void onPlayerInteractBlock(PlayerInteractEvent e){
-        if(!e.isCancelled() && e.getPlayer().hasPermission("plotmanager.create") && DBmanager.IncompleteModel != null
-                && e.getPlayer().getItemInHand().getType() == DBmanager.ModelTool && e.hasBlock()){
-            Action action = e.getAction();
-            if(action == Action.LEFT_CLICK_BLOCK){
-                DBmanager.IncompleteModel.setPoint1(e.getClickedBlock().getLocation());
-                e.getPlayer().sendMessage(Freebuild.prefix + "First point set");
-                e.setCancelled(true);
-                return;
-            }
-            else if(action == Action.RIGHT_CLICK_BLOCK){
-                DBmanager.IncompleteModel.setPoint2(e.getClickedBlock().getLocation());
-                e.getPlayer().sendMessage(Freebuild.prefix + "Second point set");
-                e.setCancelled(true);
-                return;
-            }
-        }
         if(DBmanager.curr == null || !e.hasBlock() || !e.getClickedBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
             return;
         }

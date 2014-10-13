@@ -104,6 +104,15 @@ public class Plot {
         if(assigned){
             this.p = owner;
         }
+        if(rotation == 1){
+            plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()-1).getBlock();
+        }else if(rotation == 4){
+            plotsign = new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()+1).getBlock();
+        }else if(rotation == 2){
+            plotsign = new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()-1).getBlock();
+        }else if(rotation == 3){
+            plotsign = new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()+1).getBlock();
+        }
     }
     private void Generate(){
             for(int x = Boundx[0]; x < Boundx[1]; x++){
@@ -171,6 +180,9 @@ public class Plot {
         plotSign.setLine(1, ChatColor.AQUA + DBmanager.curr.getTheme());
         plotSign.setLine(2, ChatColor.GREEN + p.getName());
         plotSign.update();
+        p.teleport(getPlotSignLocation());
+    }
+    public Location getPlotSignLocation() {
         Location l = new Location(plotsign.getWorld(), plotsign.getX()+0.5, plotsign.getY()-1, plotsign.getZ()+0.5);
         if(rotation == 1 || rotation == 2){
             l.setYaw(0);
@@ -178,6 +190,28 @@ public class Plot {
             l.setYaw(180);
         }
         l.setPitch(0);
-        p.teleport(l);
+        return l;
+    }
+    public void reset() {
+        for(int x=Boundx[0]+1; x<Boundx[1]; ++x) {
+            for(int z=Boundz[0]+1; z<Boundz[1]; ++z) {
+                new Location(w,x,0,z).getBlock().setType(Material.BEDROCK);
+                for(int y=1; y<corner.getBlockY()-1; ++y) {
+                    new Location(w,x,y,z).getBlock().setType(Material.AIR);
+                    new Location(w,x,y,z).getBlock().setType(Material.DIRT);
+                }
+                new Location(w,x,corner.getBlockY()-1,z).getBlock().setType(Material.AIR);
+                new Location(w,x,corner.getBlockY()-1,z).getBlock().setType(Material.GRASS);
+                for(int y=corner.getBlockY(); y<256; ++y) {
+                    new Location(w,x,y,z).getBlock().setType(Material.AIR);
+                }
+            }
+        }
+        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
+    }
+    public boolean isIn(Location l) {
+        int x = l.getBlockX();
+        int z = l.getBlockZ();
+        return (x > Boundx[0] && x < Boundx[1] && z > Boundz[0] && z < Boundz[1]);
     }
 }

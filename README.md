@@ -15,9 +15,15 @@ The PlotManager is a plugin designed to aid staff members in the generation of f
 
 'Theme createmodel <name>' - this command should be used by a staff member to create a model, which can later be used as base model for all plots in a theme. Each theme has exactly one model. Default model is 48x48 empty area.
 
+'Theme modelpos <1|2>' - this command should be used by a staff member to set points of a model. Selection tool also exists, wooden sword by default.
+
 'Theme savemodel' - this command should be used by a staff member to save a model. Unsaved models can't be used.
 
 'Theme listmodels' - this commands lists all saved models.
+
+'Theme deletemodel <name>' - this command deletes a model.
+
+'Theme setURL <url>' - this command should be used by a staff member to assign URL to theme. URL will be displayed when player claims a plot.
 
 Features:
 * custom plots based off a model

@@ -59,10 +59,16 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 //move the player and gen new plot
                 for(Plot plot : DBmanager.curr.getCurrplots()){
                     if(!plot.isAssigned()){
-//                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
-                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: "+ ChatColor.GRAY + DBmanager.curr.getURL());
+                        if(!DBmanager.curr.getURL().equals("null"))
+                        {
+                            p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
+                            p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
+                        }
+                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.fireTool);
                         return true;
                     }
                 }
@@ -72,11 +78,50 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         plot.assign(p);
                         p.teleport(plot.getCorner());
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
-                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: " + ChatColor.GRAY + DBmanager.curr.getURL());
+                        if(!DBmanager.curr.getURL().equals("null"))
+                        {
+                            p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
+                            p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
+                        }
                         return true;
                     }
                 }
-            }else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
+            }
+            else if(args[0].equalsIgnoreCase("toplot")){
+                if(!DBmanager.plots.containsKey(p.getName())) {
+                    p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
+                    return true;
+                }
+                ArrayList<Plot> plots = DBmanager.plots.get(p.getName());
+                int nplots = plots.size();
+                if(nplots > 0) {
+                    p.teleport(plots.get(nplots-1).getPlotSignLocation());
+                }
+                else {
+                    p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
+                }
+                return true;
+            }
+            else if(args[0].equalsIgnoreCase("resetplot")){
+                if(!DBmanager.plots.containsKey(p.getName())) {
+                    p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
+                    return true;
+                }
+                ArrayList<Plot> plots = DBmanager.plots.get(p.getName());
+                int nplots = plots.size();
+                if(nplots > 0) {
+                    for(Plot pl : plots) {
+                        if(pl.isIn(p.getLocation())) {
+                            pl.reset();
+                            p.sendMessage(Freebuild.prefix + "Plot restored to original state");
+                            return true;
+                        }
+                    }
+                }
+                p.sendMessage(Freebuild.prefix + "You can only reset your own plot");
+                return true;
+            }
+            else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
                 //create new theme
                 p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
@@ -98,6 +143,10 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     tname += s + " ";
                 }
                 tname = tname.trim();
+                if(tname.length() > 30) {
+                    p.sendMessage(Freebuild.prefix + "Provided name is too long");
+                    return true;
+                }
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", modelname);
                 DBmanager.Themes.put(tname, theme);
@@ -143,6 +192,10 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     tname += s + " ";
                 }
                 tname = tname.trim();
+                if(tname.length() > 30) {
+                    p.sendMessage(Freebuild.prefix + "Provided name is too long");
+                    return true;
+                }
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);
@@ -167,7 +220,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 if(args.length >= 2){
                     DBmanager.IncompleteModel = new PlotModel(args[1]);
                     p.sendMessage(Freebuild.prefix + "Empty model created");
-                    ItemStack tool = new ItemStack(DBmanager.ModelTool);
+                    ItemStack tool = new ItemStack(Tool.ModelTool);
                     ItemMeta tmet = tool.getItemMeta();
                     tmet.setDisplayName("Model Selector");
                     tmet.setLore(Arrays.asList(new String[] {"Use this tool to set plot corners", "Right Click - set point 1", "Left click - set point 2"}));
@@ -195,6 +248,30 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     return true;
                 }
             }
+            else if(args[0].equalsIgnoreCase("modelpos") && p.hasPermission("plotmanager.create")){
+                if(args.length >= 2){
+                    if(DBmanager.IncompleteModel == null){
+                        p.sendMessage(Freebuild.prefix + "You have to create model first");
+                        return true;
+                    }
+                    Location l = p.getLocation();
+                    if(!p.isFlying()) {
+                        l.subtract(0, 1, 0);
+                    }
+                    if(args[1].equals("1")){
+                        DBmanager.IncompleteModel.setPoint1(l);
+                    }
+                    else if(args[1].equals("2")){
+                        DBmanager.IncompleteModel.setPoint2(l);
+                    }
+                    else {
+                        p.sendMessage(Freebuild.prefix + "Invalid argument: " + args[1]);
+                        return true;
+                    }
+                    p.sendMessage(Freebuild.prefix + "Point set");
+                    return true;
+                }
+            }
             else if(args[0].equalsIgnoreCase("savemodel") && args.length >= 1 && p.hasPermission("plotmanager.create")){
                 if(DBmanager.IncompleteModel != null){
                     p.sendMessage(Freebuild.prefix + "Saving model");
@@ -217,7 +294,15 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     return false;
                 }
                 p.sendMessage(Freebuild.prefix + "Displaying help for " + ChatColor.DARK_GREEN + "/theme " + args[1]);
-                if(args[1].equalsIgnoreCase("set")){
+                if(args[1].equalsIgnoreCase("toplot")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme toplot" + ChatColor.WHITE + " -- teleports you to your plot in current theme");
+                }
+                else if(args[1].equalsIgnoreCase("resetplot")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme resetplot" + ChatColor.WHITE + " -- restores plot to original state");
+                    p.sendMessage("You have to be inside the plot to reset it");
+                    p.sendMessage("You can only reset your own plots in current theme");
+                }
+                else if(args[1].equalsIgnoreCase("set")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme set [-m <model>] <name>" + ChatColor.WHITE + " -- start new chain of Themed Builds");
                     p.sendMessage("If " + ChatColor.DARK_GREEN + "-m <model>" + ChatColor.WHITE + " is not specified, default model is used");
                     p.sendMessage("To see available models, " + ChatColor.DARK_GREEN + "/theme listmodels");
@@ -233,6 +318,12 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage("Use model tool (default is wooden sword, can be changed in config.yml) to set points");
                     p.sendMessage("While holding model tool, left click on block to set first point, right click to set second point");
                     p.sendMessage("After both points are set, use " + ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " to save your model");
+                }
+                else if(args[1].equalsIgnoreCase("modelpos")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme modelpos <1|2>" + ChatColor.WHITE + " -- set point at feet coordinates");
+                    p.sendMessage("If player is not flying, point is set to the block player is standing on");
+                    p.sendMessage("Otherwise, it's set to the block player feet are in");
+                    p.sendMessage("This command exists as an alternative to model tool, see " + ChatColor.DARK_GREEN + "/theme help createmodel");
                 }
                 else if(args[1].equalsIgnoreCase("deletemodel")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme deletemodel <name>" + ChatColor.WHITE + " -- delete plot model");
