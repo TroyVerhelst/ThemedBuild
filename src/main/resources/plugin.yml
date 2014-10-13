@@ -13,6 +13,7 @@ commands:
         §2/theme new <name>§f -- create new Themed Build
         §2/theme set <name>§f -- start new chain of Themed Builds
         §2/theme createmodel <name>§f -- create empty plot model
+        §2/theme modelpos <1|2>§f -- set point at feet coordinates
         §2/theme deletemodel <name>§f -- delete plot model
         §2/theme savemodel§f -- save current model
         §2/theme listmodels§f -- list available models

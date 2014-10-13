@@ -203,6 +203,30 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     return true;
                 }
             }
+            else if(args[0].equalsIgnoreCase("modelpos") && p.hasPermission("plotmanager.create")){
+                if(args.length >= 2){
+                    if(DBmanager.IncompleteModel == null){
+                        p.sendMessage(Freebuild.prefix + "You have to create model first");
+                        return true;
+                    }
+                    Location l = p.getLocation();
+                    if(!p.isFlying()) {
+                        l.subtract(0, 1, 0);
+                    }
+                    if(args[1].equals("1")){
+                        DBmanager.IncompleteModel.setPoint1(l);
+                    }
+                    else if(args[1].equals("2")){
+                        DBmanager.IncompleteModel.setPoint2(l);
+                    }
+                    else {
+                        p.sendMessage(Freebuild.prefix + "Invalid argument: " + args[1]);
+                        return true;
+                    }
+                    p.sendMessage(Freebuild.prefix + "Point set");
+                    return true;
+                }
+            }
             else if(args[0].equalsIgnoreCase("savemodel") && args.length >= 1 && p.hasPermission("plotmanager.create")){
                 if(DBmanager.IncompleteModel != null){
                     p.sendMessage(Freebuild.prefix + "Saving model");
@@ -241,6 +265,12 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage("Use model tool (default is wooden sword, can be changed in config.yml) to set points");
                     p.sendMessage("While holding model tool, left click on block to set first point, right click to set second point");
                     p.sendMessage("After both points are set, use " + ChatColor.DARK_GREEN + "/theme savemodel" + ChatColor.WHITE + " to save your model");
+                }
+                else if(args[1].equalsIgnoreCase("modelpos")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme modelpos <1|2>" + ChatColor.WHITE + " -- set point at feet coordinates");
+                    p.sendMessage("If player is not flying, point is set to the block player is standing on");
+                    p.sendMessage("Otherwise, it's set to the block player feet are in");
+                    p.sendMessage("This command exists as an alternative to model tool, see " + ChatColor.DARK_GREEN + "/theme help createmodel");
                 }
                 else if(args[1].equalsIgnoreCase("deletemodel")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme deletemodel <name>" + ChatColor.WHITE + " -- delete plot model");
