@@ -84,7 +84,23 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         return true;
                     }
                 }
-            }else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
+            }
+            else if(args[0].equalsIgnoreCase("toplot")){
+                if(!DBmanager.plots.containsKey(p.getName())) {
+                    p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
+                    return true;
+                }
+                ArrayList<Plot> plots = DBmanager.plots.get(p.getName());
+                int nplots = plots.size();
+                if(nplots > 0) {
+                    p.teleport(plots.get(nplots-1).getPlotSignLocation());
+                }
+                else {
+                    p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
+                }
+                return true;
+            }
+            else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
                 //create new theme
                 p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
@@ -257,7 +273,10 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     return false;
                 }
                 p.sendMessage(Freebuild.prefix + "Displaying help for " + ChatColor.DARK_GREEN + "/theme " + args[1]);
-                if(args[1].equalsIgnoreCase("set")){
+                if(args[1].equalsIgnoreCase("toplot")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme toplot" + ChatColor.WHITE + " -- teleports you to your plot in current theme");
+                }
+                else if(args[1].equalsIgnoreCase("set")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme set [-m <model>] <name>" + ChatColor.WHITE + " -- start new chain of Themed Builds");
                     p.sendMessage("If " + ChatColor.DARK_GREEN + "-m <model>" + ChatColor.WHITE + " is not specified, default model is used");
                     p.sendMessage("To see available models, " + ChatColor.DARK_GREEN + "/theme listmodels");
