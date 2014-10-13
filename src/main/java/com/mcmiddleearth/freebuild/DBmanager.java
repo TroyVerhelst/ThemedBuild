@@ -53,8 +53,6 @@ public class DBmanager implements Listener{
     
     public static boolean BuildPastPlots;
     
-    public static Material ModelTool;
-    
     public static ArrayList<String> Models;
     
     static{
@@ -140,7 +138,7 @@ public class DBmanager implements Listener{
         MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
         BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
-        ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
+        Tool.ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
         updateModelsList();
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");

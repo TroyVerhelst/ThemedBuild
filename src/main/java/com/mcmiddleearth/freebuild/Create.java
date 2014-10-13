@@ -62,7 +62,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 //                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
-                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: "+ ChatColor.GRAY + DBmanager.curr.getURL());
+                        if(!DBmanager.curr.getURL().equals("null"))
+                        {
+                            p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
+                            p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
+                        }
                         return true;
                     }
                 }
@@ -72,7 +76,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         plot.assign(p);
                         p.teleport(plot.getCorner());
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
-                        p.sendMessage(Freebuild.prefix + "More information about this Themedbuild: " + ChatColor.GRAY + DBmanager.curr.getURL());
+                        if(!DBmanager.curr.getURL().equals("null"))
+                        {
+                            p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
+                            p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
+                        }
                         return true;
                     }
                 }
@@ -167,7 +175,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 if(args.length >= 2){
                     DBmanager.IncompleteModel = new PlotModel(args[1]);
                     p.sendMessage(Freebuild.prefix + "Empty model created");
-                    ItemStack tool = new ItemStack(DBmanager.ModelTool);
+                    ItemStack tool = new ItemStack(Tool.ModelTool);
                     ItemMeta tmet = tool.getItemMeta();
                     tmet.setDisplayName("Model Selector");
                     tmet.setLore(Arrays.asList(new String[] {"Use this tool to set plot corners", "Right Click - set point 1", "Left click - set point 2"}));

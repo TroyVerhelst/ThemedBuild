@@ -1,6 +1,6 @@
 name: Freebuild
 main: com.mcmiddleearth.freebuild.Freebuild
-version: 1.0
+version: 1.1
 description: Freebuild controler
 commands:
   theme:

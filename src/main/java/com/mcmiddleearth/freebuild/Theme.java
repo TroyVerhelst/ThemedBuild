@@ -13,11 +13,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.SandstoneType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.material.Sandstone;
 import org.bukkit.material.Stairs;
 
 /**
@@ -96,6 +98,11 @@ public class Theme {
             for(int x = loc.getBlockX()-1; x<loc.getBlockX() + 2; x++){
                 Location lc = new Location(loc.getWorld(), x, loc.getBlockY(), z);
                 lc.getBlock().setType(Material.SANDSTONE);
+                state = lc.getBlock().getState();
+                Sandstone ss = (Sandstone) state.getData();
+                ss.setType(SandstoneType.CRACKED);
+                state.setData(ss);
+                state.update(true);
             }
             Location lc = new Location(loc.getWorld(), loc.getBlockX()-2, loc.getBlockY(), z);
             lc.getBlock().setType(Material.BRICK_STAIRS);
@@ -190,10 +197,22 @@ public class Theme {
         plots.add(p4);
         for(int z = cent.getBlockZ()-1; z<cent.getBlockZ()+2; z++){
             for(int x = p1.getCorner().getBlockX()-1; x<p1.getCorner().getBlockX()+sizex+4; x++){
-                new Location(cent.getWorld(), x, cent.getBlockY(), z).getBlock().setType(Material.SANDSTONE);
+                Location tmp = new Location(cent.getWorld(), x, cent.getBlockY(), z);
+                tmp.getBlock().setType(Material.SANDSTONE);
+                state = tmp.getBlock().getState();
+                Sandstone ss = (Sandstone) state.getData();
+                ss.setType(SandstoneType.CRACKED);
+                state.setData(ss);
+                state.update(true);
             }
             for(int x = p2.getCorner().getBlockX()+1; x>p2.getCorner().getBlockX()-sizex-4; x--){
-                new Location(cent.getWorld(), x, cent.getBlockY(), z).getBlock().setType(Material.SANDSTONE);
+                Location tmp = new Location(cent.getWorld(), x, cent.getBlockY(), z);
+                tmp.getBlock().setType(Material.SANDSTONE);
+                state = tmp.getBlock().getState();
+                Sandstone ss = (Sandstone) state.getData();
+                ss.setType(SandstoneType.CRACKED);
+                state.setData(ss);
+                state.update(true);
             }
         }
         for(int x = p1.getCorner().getBlockX()-1; x<p1.getCorner().getBlockX()+sizex+4; x++){
