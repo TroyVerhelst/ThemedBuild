@@ -112,10 +112,6 @@ public class PlotModel {
                             stream.println(model[x][y][z].getDurability());
                         }
                     }
-                    if(p != null){
-                        int pc = ((x+1)*sizey*sizez*100)/(sizex*sizey*sizez);
-                        p.sendMessage(Freebuild.prefix + "Saving model... " + Integer.toString(pc) + "%");
-                    }
                 }
                 if(p != null){
                     p.sendMessage(Freebuild.prefix + "Done");

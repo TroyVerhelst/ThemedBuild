@@ -192,4 +192,26 @@ public class Plot {
         l.setPitch(0);
         return l;
     }
+    public void reset() {
+        for(int x=Boundx[0]+1; x<Boundx[1]; ++x) {
+            for(int z=Boundz[0]+1; z<Boundz[1]; ++z) {
+                new Location(w,x,0,z).getBlock().setType(Material.BEDROCK);
+                for(int y=1; y<corner.getBlockY()-1; ++y) {
+                    new Location(w,x,y,z).getBlock().setType(Material.AIR);
+                    new Location(w,x,y,z).getBlock().setType(Material.DIRT);
+                }
+                new Location(w,x,corner.getBlockY()-1,z).getBlock().setType(Material.AIR);
+                new Location(w,x,corner.getBlockY()-1,z).getBlock().setType(Material.GRASS);
+                for(int y=corner.getBlockY(); y<256; ++y) {
+                    new Location(w,x,y,z).getBlock().setType(Material.AIR);
+                }
+            }
+        }
+        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
+    }
+    public boolean isIn(Location l) {
+        int x = l.getBlockX();
+        int z = l.getBlockZ();
+        return (x > Boundx[0] && x < Boundx[1] && z > Boundz[0] && z < Boundz[1]);
+    }
 }

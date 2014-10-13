@@ -100,6 +100,25 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 }
                 return true;
             }
+            else if(args[0].equalsIgnoreCase("resetplot")){
+                if(!DBmanager.plots.containsKey(p.getName())) {
+                    p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
+                    return true;
+                }
+                ArrayList<Plot> plots = DBmanager.plots.get(p.getName());
+                int nplots = plots.size();
+                if(nplots > 0) {
+                    for(Plot pl : plots) {
+                        if(pl.isIn(p.getLocation())) {
+                            pl.reset();
+                            p.sendMessage(Freebuild.prefix + "Plot restored to original state");
+                            return true;
+                        }
+                    }
+                }
+                p.sendMessage(Freebuild.prefix + "You can only reset your own plot");
+                return true;
+            }
             else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
                 //create new theme
                 p.sendMessage(Freebuild.prefix + "Generating...");
@@ -275,6 +294,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 p.sendMessage(Freebuild.prefix + "Displaying help for " + ChatColor.DARK_GREEN + "/theme " + args[1]);
                 if(args[1].equalsIgnoreCase("toplot")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme toplot" + ChatColor.WHITE + " -- teleports you to your plot in current theme");
+                }
+                else if(args[1].equalsIgnoreCase("resetplot")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme resetplot" + ChatColor.WHITE + " -- restores plot to original state");
+                    p.sendMessage("You have to be inside the plot to reset it");
+                    p.sendMessage("You can only reset your own plots in current theme");
                 }
                 else if(args[1].equalsIgnoreCase("set")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme set [-m <model>] <name>" + ChatColor.WHITE + " -- start new chain of Themed Builds");
