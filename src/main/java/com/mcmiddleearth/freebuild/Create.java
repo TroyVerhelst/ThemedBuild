@@ -106,6 +106,10 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     tname += s + " ";
                 }
                 tname = tname.trim();
+                if(tname.length() > 30) {
+                    p.sendMessage(Freebuild.prefix + "Provided name is too long");
+                    return true;
+                }
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", modelname);
                 DBmanager.Themes.put(tname, theme);
@@ -151,6 +155,10 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     tname += s + " ";
                 }
                 tname = tname.trim();
+                if(tname.length() > 30) {
+                    p.sendMessage(Freebuild.prefix + "Provided name is too long");
+                    return true;
+                }
                 DBmanager.currModel = DBmanager.loadPlotModel(modelname);
                 Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
                 DBmanager.Themes.put(tname, theme);

@@ -87,6 +87,9 @@ public class Theme {
         plotSign.setLine(0, ChatColor.BOLD + "Main");
         plotSign.setLine(1, ChatColor.BOLD + "ThemedBuild");
         plotSign.setLine(2, theme);
+        if(theme.length() > 15) {
+            plotSign.setLine(3, theme.substring(15));
+        }
         plotSign.update();
     }
     private void Generate(){
