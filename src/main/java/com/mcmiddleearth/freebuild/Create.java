@@ -59,7 +59,6 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 //move the player and gen new plot
                 for(Plot plot : DBmanager.curr.getCurrplots()){
                     if(!plot.isAssigned()){
-//                        p.sendMessage(p.getLocation().toString());
                         plot.assign(p);
                         p.sendMessage(Freebuild.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         if(!DBmanager.curr.getURL().equals("null"))
@@ -67,6 +66,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                             p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
                             p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
                         }
+                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.fireTool);
                         return true;
                     }
                 }

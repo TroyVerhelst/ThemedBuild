@@ -139,6 +139,8 @@ public class DBmanager implements Listener{
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
         BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
         Tool.ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
+        Tool.liquidTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("liquidTool"));
+        Tool.fireTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("fireTool"));
         updateModelsList();
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
