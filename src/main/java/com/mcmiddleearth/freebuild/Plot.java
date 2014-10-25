@@ -135,18 +135,18 @@ public class Plot {
     }
     public void assign(Player p){
         DBmanager.curr.getCurrplots().remove(this);
-        this.p = p.getName();
+        this.p = p.getUniqueId().toString();
         assigned = true;
         DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
 //        DBmanager.curr.getPlots().put(p.getName(), this);
-        if(DBmanager.plots.containsKey(p.getName())){
-            ArrayList<Plot> ps = DBmanager.plots.get(p.getName());
+        if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
+            ArrayList<Plot> ps = DBmanager.plots.get(p.getUniqueId().toString());
             ps.add(this);
-            DBmanager.plots.put(p.getName(), ps);
+            DBmanager.plots.put(p.getUniqueId().toString(), ps);
         }else{
             ArrayList<Plot> ps = new ArrayList<Plot>();
             ps.add(this);
-            DBmanager.plots.put(p.getName(), ps);
+            DBmanager.plots.put(p.getUniqueId().toString(), ps);
         }
         if(rotation == 1 || rotation == 4){
             new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);

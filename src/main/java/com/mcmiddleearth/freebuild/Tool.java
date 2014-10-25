@@ -46,8 +46,8 @@ public final class Tool implements Listener{
     
     private boolean interactionAllowed(Player pl, Location l) {
         boolean allowed = false;
-        if(DBmanager.plots.containsKey(pl.getName())) {
-            ArrayList<Plot> plots = DBmanager.plots.get(pl.getName());
+        if(DBmanager.plots.containsKey(pl.getUniqueId().toString())) {
+            ArrayList<Plot> plots = DBmanager.plots.get(pl.getUniqueId().toString());
             for(Plot p : plots) {
                 if(p.isIn(l)) {
                     allowed = true;
@@ -55,8 +55,8 @@ public final class Tool implements Listener{
                 }
             }
         }
-        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(pl.getName())) {
-            ArrayList<Plot> plots = DBmanager.pastPlots.get(pl.getName());
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(pl.getUniqueId().toString())) {
+            ArrayList<Plot> plots = DBmanager.pastPlots.get(pl.getUniqueId().toString());
             for(Plot p : plots) {
                 if(p.isIn(l)) {
                     allowed = true;
