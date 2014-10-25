@@ -170,7 +170,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 ////                p.teleport(DBmanager.curr.getCent());
                 return true;
             }
-            else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create")){
+            else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create") && DBmanager.curr == null){
                 //set and generate a theme with player at center
                 p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";
