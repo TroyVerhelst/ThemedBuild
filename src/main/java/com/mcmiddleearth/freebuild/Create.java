@@ -83,6 +83,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                             p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
                             p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
                         }
+                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.fireTool);
                         return true;
                     }
                 }
