@@ -65,8 +65,8 @@ public final class Protection implements Listener{
 
         Location ploc=b.getLocation();
         canBuild = false;
-        if(DBmanager.plots.containsKey(p.getName())){
-            List<Plot> pPlots = DBmanager.plots.get(p.getName());
+        if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
+            List<Plot> pPlots = DBmanager.plots.get(p.getUniqueId().toString());
 //            p.sendMessage(pPlots.toString());
             for(Plot plot : pPlots){
                 if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
@@ -74,8 +74,8 @@ public final class Protection implements Listener{
                 }
             }
         }
-        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
-            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getUniqueId().toString())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getUniqueId().toString());
 //            p.sendMessage(pPlots.toString());
             for(Plot plot : pPlots){
                 if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
@@ -93,16 +93,16 @@ public final class Protection implements Listener{
             return;
         Location ploc=b.getLocation();
         canBuild = false;
-        if(DBmanager.plots.containsKey(p.getName())){
-            List<Plot> pPlots = DBmanager.plots.get(p.getName());
+        if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
+            List<Plot> pPlots = DBmanager.plots.get(p.getUniqueId().toString());
             for(Plot plot : pPlots){
                 if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
                     canBuild = true;//ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]));
                 }
             }
         }
-        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getName())){
-            List<Plot> pPlots = DBmanager.pastPlots.get(p.getName());
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getUniqueId().toString())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getUniqueId().toString());
 //            p.sendMessage(pPlots.toString());
             for(Plot plot : pPlots){
                 if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){

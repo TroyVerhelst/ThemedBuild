@@ -51,8 +51,8 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
         Player p = (Player) sender;
         if(cmd.getName().equalsIgnoreCase("theme")){
             if(args.length == 0){
-                if(!DBmanager.InfinitePlotsPerPlayer && DBmanager.plots.containsKey(p.getName())
-                        && DBmanager.MaxPlotsPerPlayer <= DBmanager.plots.get(p.getName()).size()){
+                if(!DBmanager.InfinitePlotsPerPlayer && DBmanager.plots.containsKey(p.getUniqueId().toString())
+                        && DBmanager.MaxPlotsPerPlayer <= DBmanager.plots.get(p.getUniqueId().toString()).size()){
                     p.sendMessage(Freebuild.prefix + "You reached maximum number of plots");
                     return true;
                 }
@@ -83,16 +83,19 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                             p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
                             p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
                         }
+                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.liquidTool);
+                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.fireTool);
                         return true;
                     }
                 }
             }
             else if(args[0].equalsIgnoreCase("toplot")){
-                if(!DBmanager.plots.containsKey(p.getName())) {
+                if(!DBmanager.plots.containsKey(p.getUniqueId().toString())) {
                     p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
                     return true;
                 }
-                ArrayList<Plot> plots = DBmanager.plots.get(p.getName());
+                ArrayList<Plot> plots = DBmanager.plots.get(p.getUniqueId().toString());
                 int nplots = plots.size();
                 if(nplots > 0) {
                     p.teleport(plots.get(nplots-1).getPlotSignLocation());
@@ -103,11 +106,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 return true;
             }
             else if(args[0].equalsIgnoreCase("resetplot")){
-                if(!DBmanager.plots.containsKey(p.getName())) {
+                if(!DBmanager.plots.containsKey(p.getUniqueId().toString())) {
                     p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
                     return true;
                 }
-                ArrayList<Plot> plots = DBmanager.plots.get(p.getName());
+                ArrayList<Plot> plots = DBmanager.plots.get(p.getUniqueId().toString());
                 int nplots = plots.size();
                 if(nplots > 0) {
                     for(Plot pl : plots) {
@@ -170,7 +173,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
 ////                p.teleport(DBmanager.curr.getCent());
                 return true;
             }
-            else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create")){
+            else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create") && DBmanager.curr == null){
                 //set and generate a theme with player at center
                 p.sendMessage(Freebuild.prefix + "Generating...");
                 String tname = "";

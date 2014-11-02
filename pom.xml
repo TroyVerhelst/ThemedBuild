@@ -24,16 +24,16 @@
        </repository>
    </repositories>
    <dependencies>
-       <dependency>
-           <groupId>org.bukkit</groupId>
-           <artifactId>bukkit</artifactId>
-           <version>1.7.2-R0.3</version>
-           <type>jar</type>
-       </dependency>
       <dependency>
          <groupId>org.projectlombok</groupId>
          <artifactId>lombok</artifactId>
          <version>1.12.2</version>
+         <type>jar</type>
+      </dependency>
+      <dependency>
+         <groupId>org.bukkit</groupId>
+         <artifactId>bukkit</artifactId>
+         <version>1.7.9-R0.2</version>
          <type>jar</type>
       </dependency>
    </dependencies>
