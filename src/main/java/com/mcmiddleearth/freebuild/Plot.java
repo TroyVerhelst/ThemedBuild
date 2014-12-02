@@ -137,7 +137,14 @@ public class Plot {
         DBmanager.curr.getCurrplots().remove(this);
         this.p = p.getUniqueId().toString();
         assigned = true;
-        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
+        BlockFace modelDirection;
+        if(rotation == 1 || rotation == 2) {
+            modelDirection = BlockFace.SOUTH;
+        }
+        else {
+            modelDirection = BlockFace.NORTH;
+        }
+        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1),modelDirection);
 //        DBmanager.curr.getPlots().put(p.getName(), this);
         if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
             ArrayList<Plot> ps = DBmanager.plots.get(p.getUniqueId().toString());
@@ -207,7 +214,14 @@ public class Plot {
                 }
             }
         }
-        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1));
+        BlockFace modelDirection;
+        if(rotation == 1 || rotation == 2) {
+            modelDirection = BlockFace.SOUTH;
+        }
+        else {
+            modelDirection = BlockFace.NORTH;
+        }
+        DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1),modelDirection);
     }
     public boolean isIn(Location l) {
         int x = l.getBlockX();
