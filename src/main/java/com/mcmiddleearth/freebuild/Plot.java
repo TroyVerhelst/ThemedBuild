@@ -199,7 +199,7 @@ public class Plot {
         l.setPitch(0);
         return l;
     }
-    public void reset() {
+    private void clear() {
         for(int x=Boundx[0]+1; x<Boundx[1]; ++x) {
             for(int z=Boundz[0]+1; z<Boundz[1]; ++z) {
                 new Location(w,x,0,z).getBlock().setType(Material.BEDROCK);
@@ -214,6 +214,9 @@ public class Plot {
                 }
             }
         }
+    }
+    public void reset() {
+        clear();
         BlockFace modelDirection;
         if(rotation == 1 || rotation == 2) {
             modelDirection = BlockFace.SOUTH;
@@ -222,6 +225,18 @@ public class Plot {
             modelDirection = BlockFace.NORTH;
         }
         DBmanager.currModel.generate(new Location(w, Boundx[0]+1, corner.getBlockY()-1, Boundz[0]+1),modelDirection);
+    }
+    public void unclaim() {
+        plotsign.setType(Material.AIR);
+        if(rotation == 1 || rotation == 4){
+            new Location(w, corner.getBlockX()+1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.AIR);
+        }else if(rotation == 2 || rotation == 3){
+            new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.AIR);
+        }
+        clear();
+        DBmanager.curr.getCurrplots().add(this);
+        this.p = "";
+        assigned = false;
     }
     public boolean isIn(Location l) {
         int x = l.getBlockX();

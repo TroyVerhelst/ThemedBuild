@@ -30,6 +30,7 @@ public class Freebuild extends JavaPlugin{
         getServer().getPluginManager().registerEvents(new Protection(), this);
         getServer().getPluginManager().registerEvents(new DBmanager(), this);
         DBmanager.loadAll();
+        getLogger().info("Enabled!");
     }
     
     @Override

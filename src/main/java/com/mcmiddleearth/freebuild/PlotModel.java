@@ -139,7 +139,9 @@ public class PlotModel {
         MaterialData data=state.getData();
         if (data != null && data instanceof Directional) {
             BlockFace facing = ((Directional)data).getFacing();
-            ((Directional)data).setFacingDirection(facing);
+            if(facing != BlockFace.DOWN && facing != BlockFace.UP) {
+                ((Directional)data).setFacingDirection(facing);
+            }
             state.setData(data);
             state.update(true);
         }
