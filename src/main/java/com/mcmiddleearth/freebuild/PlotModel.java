@@ -17,9 +17,13 @@ import java.util.logging.Logger;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Directional;
+import org.bukkit.material.MaterialData;
 
 /**
  *
@@ -130,17 +134,39 @@ public class PlotModel {
             }
         }
     }
-    public void generate(Location l){
+    private static void setOpposite(Block block){
+        BlockState state = block.getState();
+        MaterialData data=state.getData();
+        if (data != null && data instanceof Directional) {
+            BlockFace facing = ((Directional)data).getFacing();
+            if(facing != BlockFace.DOWN && facing != BlockFace.UP) {
+                ((Directional)data).setFacingDirection(facing);
+            }
+            state.setData(data);
+            state.update(true);
+        }
+    }
+    public void generate(Location l, BlockFace direction){
         Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
         Location iter;
         for(int x = 0; x < sizex; ++x){
             for(int y = 0; y < sizey; ++y){
                 for(int z = 0; z < sizez; ++z){
-                    iter = new Location(corner.getWorld(),corner.getBlockX()+x,corner.getBlockY()+y,corner.getBlockZ()+z);
-                    iter.getBlock().setType(model[x][y][z].getType());
-                    BlockState state = iter.getBlock().getState();
-                    state.setData(model[x][y][z].getData());
-                    state.update(true);
+                    if(direction == BlockFace.SOUTH) {
+                        iter = new Location(corner.getWorld(),corner.getBlockX()+x,corner.getBlockY()+y,corner.getBlockZ()+z);
+                        iter.getBlock().setType(model[x][y][z].getType());
+                        BlockState state = iter.getBlock().getState();
+                        state.setData(model[x][y][z].getData());
+                        state.update(true);
+                    }
+                    else if(direction == BlockFace.NORTH) {
+                        iter = new Location(corner.getWorld(),corner.getBlockX()+x,corner.getBlockY()+y,corner.getBlockZ()+z);
+                        iter.getBlock().setType(model[sizex-x-1][y][sizez-z-1].getType());
+                        BlockState state = iter.getBlock().getState();
+                        state.setData(model[sizex-x-1][y][sizez-z-1].getData());
+                        state.update(true);
+                        setOpposite(iter.getBlock());
+                    }
                 }
             }
         }

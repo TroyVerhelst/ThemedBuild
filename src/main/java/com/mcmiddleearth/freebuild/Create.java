@@ -9,6 +9,7 @@ package com.mcmiddleearth.freebuild;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -122,6 +123,23 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     }
                 }
                 p.sendMessage(Freebuild.prefix + "You can only reset your own plot");
+                return true;
+            }
+            else if(args[0].equalsIgnoreCase("unclaim")&&p.hasPermission("plotmanager.create")){
+                Set<String> keys = DBmanager.plots.keySet();
+                List<Plot> pPlots;
+                for(String k : keys){
+                    pPlots = DBmanager.plots.get(k);
+                    for(Plot plot : pPlots){
+                        if(plot.isIn(p.getLocation())) {
+                            plot.unclaim();
+                            pPlots.remove(plot);
+                            p.sendMessage(Freebuild.prefix + "Plot unclaimed");
+                            return true;
+                        }
+                    }
+                }
+                p.sendMessage(Freebuild.prefix + "This plot isn't claimed");
                 return true;
             }
             else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
@@ -304,6 +322,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme resetplot" + ChatColor.WHITE + " -- restores plot to original state");
                     p.sendMessage("You have to be inside the plot to reset it");
                     p.sendMessage("You can only reset your own plots in current theme");
+                }
+                else if(args[1].equalsIgnoreCase("unclaim")){
+                    p.sendMessage(ChatColor.DARK_GREEN + "/theme unclaim" + ChatColor.WHITE + " -- unclaims a plot");
+                    p.sendMessage("You have to be inside the plot to unclaim it");
+                    p.sendMessage("Plot will be cleared");
                 }
                 else if(args[1].equalsIgnoreCase("set")){
                     p.sendMessage(ChatColor.DARK_GREEN + "/theme set [-m <model>] <name>" + ChatColor.WHITE + " -- start new chain of Themed Builds");
