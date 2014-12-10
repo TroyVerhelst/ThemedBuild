@@ -9,6 +9,12 @@ The PlotManager is a plugin designed to aid staff members in the generation of f
 
 'Theme' - this command just on its own sends the executer to a new plot in the current theme for them to build on, it also provides them building permissions on that plot.
 
+'Theme toplot' - this command teleports players to plots they own.
+
+'Theme resetplot' - this command can be used by players to reset their plots to default.
+
+'Theme unclaim' - this command should be used by a staff member to unclaim a plot that doesn't follow theme rules.
+
 'Theme set [-m model] <theme name>' - this command should only be used by administrators to start off a chain of themes. The theme name cannot be the same as an old theme and will appear on every builders plot sign. Players who use '/theme' will be sent to this theme instead of any old ones. If model is not specified, default model will be used.
 
 'Theme new [-m model] <theme name>' - this command should be used by a staff member to create a new theme after the last one. The theme name cannot be the same as an old theme and will appear on every builders plot sign. Players who use '/theme' will be sent to this theme instead of any old ones.  If model is not specified, default model will be used.
