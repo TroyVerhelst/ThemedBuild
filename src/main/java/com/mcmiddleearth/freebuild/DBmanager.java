@@ -55,6 +55,8 @@ public class DBmanager implements Listener{
     
     public static ArrayList<String> Models;
     
+    public static boolean loaded;
+    
     static{
         if(!Theme_dat.exists()){
             Theme_dat.mkdirs();
@@ -64,6 +66,7 @@ public class DBmanager implements Listener{
             File out = new File(Plot_dat + System.getProperty("file.separator") + "default.MCplot");
             PlotModel.generateDefaultModel(out);
         }
+        loaded = false;
     }
     
     public static void save(){
@@ -153,6 +156,9 @@ public class DBmanager implements Listener{
                 String line = s.nextLine();
                 List<String> items = Arrays.asList(line.split("\\s*,\\s*"));
                 Location cent = new Location(Bukkit.getWorld(items.get(0)), Integer.parseInt(items.get(1)), Integer.parseInt(items.get(2))+1, Integer.parseInt(items.get(3)));
+                if(Bukkit.getWorld(items.get(0)) == null) {
+                    return;
+                }
                 int xl = Integer.parseInt(s.nextLine());
                 int xr = Integer.parseInt(s.nextLine());
                 String model = s.nextLine();
@@ -212,8 +218,10 @@ public class DBmanager implements Listener{
                 DBmanager.Themes.put(t.getTheme(), t);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(DBmanager.class.getName()).log(Level.SEVERE, null, ex);
+                return;
             }
         }
+        loaded = true;
     }
     @EventHandler
     public void onWorldSave(WorldSaveEvent e){

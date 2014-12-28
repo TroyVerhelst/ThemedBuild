@@ -72,9 +72,7 @@ public final class Tool implements Listener{
         if(!e.isCancelled() && e.getPlayer().getItemInHand().getType() == liquidTool && e.hasBlock()) {
             Location l = e.getClickedBlock().getRelative(e.getBlockFace()).getLocation();
             if(interactionAllowed(e.getPlayer(),l)) {
-                e.setCancelled(true);
-                if(l.getBlock().getType() == Material.AIR || l.getBlock().getType() == Material.LAVA || l.getBlock().getType() == Material.WATER
-                        || l.getBlock().getType() == Material.STATIONARY_WATER || l.getBlock().getType() == Material.STATIONARY_LAVA) {
+                if(l.getBlock().isEmpty() || l.getBlock().isLiquid()) {
                     if(e.getAction() == Action.LEFT_CLICK_BLOCK) {
                         l.getBlock().setType(Material.AIR);
                         l.getBlock().setType(Material.LAVA);
@@ -98,7 +96,6 @@ public final class Tool implements Listener{
         if(!e.isCancelled() && e.getPlayer().getItemInHand().getType() == fireTool && e.hasBlock()) {
             Location l = e.getClickedBlock().getRelative(e.getBlockFace()).getLocation();
             if(interactionAllowed(e.getPlayer(),l)) {
-                e.setCancelled(true);
                 if(l.getBlock().getType() == Material.AIR) {
                     if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                         l.getBlock().setType(Material.FIRE);
