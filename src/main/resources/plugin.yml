@@ -10,6 +10,7 @@ commands:
         
         Available subcommands:
         §2/theme toplot§f -- teleports you to your plot in current theme
+        §2/theme warp§f -- teleports you to the current theme
         §2/theme resetplot§f -- restores plot to original state
         §2/theme unclaim§f -- unclaims a plot
         §2/theme help [subcommand]§f -- view more informations about subcommand

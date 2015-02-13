@@ -106,6 +106,14 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 }
                 return true;
             }
+            else if(args[0].equalsIgnoreCase("warp")){
+                if(DBmanager.curr != null){
+                    p.teleport(DBmanager.curr.getCent());
+                    p.sendMessage("Teleported to current theme!");
+                }else{
+                    p.sendMessage("There is no current theme.");
+                }
+            }
             else if(args[0].equalsIgnoreCase("resetplot")){
                 if(!DBmanager.plots.containsKey(p.getUniqueId().toString())) {
                     p.sendMessage(Freebuild.prefix + "You don't have claimed plots in current theme");
