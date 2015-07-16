@@ -105,7 +105,8 @@ public class PlotModel {
             for(int x = 0; x < sizex; ++x){
                 for(int y = 0; y < sizey; ++y){
                     for(int z = 0; z < sizez; ++z){
-                        iter = new Location(corner.getWorld(),corner.getBlockX()+x,corner.getBlockY()+y,corner.getBlockZ()+z);
+                        iter = corner.clone().add(x, y, z);//(I think this is faster)
+                        //new Location(corner.getWorld(),corner.getBlockX()+x,corner.getBlockY()+y,corner.getBlockZ()+z);
                         model[x][y][z] = iter.getBlock().getState().getData().toItemStack();
                     }
                 }

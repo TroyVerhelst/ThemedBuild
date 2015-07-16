@@ -164,99 +164,109 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 return true;
             }
             else if(args[0].equalsIgnoreCase("new")&&p.hasPermission("plotmanager.create")){
-                //create new theme
-                p.sendMessage(Freebuild.prefix + "Generating...");
-                String tname = "";
-                String modelname = "default";
-                int namebegin = 1;
-                if(args.length == 1){
-                    return false;
-                }
-                if(args[1].equals("-m") && args.length > 3){
-                    modelname = args[2];
-                    namebegin = 3;
-                    if(!DBmanager.modelExists(modelname)){
-                        p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
-                        p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                if(Freebuild.getPluginInstance().getConfig().getStringList("ValidWorlds").contains(p.getWorld().getName())){
+                    //create new theme
+                    p.sendMessage(Freebuild.prefix + "Generating...");
+                    String tname = "";
+                    String modelname = "default";
+                    int namebegin = 1;
+                    if(args.length == 1){
+                        return false;
+                    }
+                    if(args[1].equals("-m") && args.length > 3){
+                        modelname = args[2];
+                        namebegin = 3;
+                        if(!DBmanager.modelExists(modelname)){
+                            p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
+                            p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                            return true;
+                        }
+                    }
+                    for(String s : Arrays.asList(args).subList(namebegin, args.length)){
+                        tname += s + " ";
+                    }
+                    tname = tname.trim();
+                    if(tname.length() > 30) {
+                        p.sendMessage(Freebuild.prefix + "Provided name is too long");
                         return true;
                     }
-                }
-                for(String s : Arrays.asList(args).subList(namebegin, args.length)){
-                    tname += s + " ";
-                }
-                tname = tname.trim();
-                if(tname.length() > 30) {
-                    p.sendMessage(Freebuild.prefix + "Provided name is too long");
+                    DBmanager.currModel = DBmanager.loadPlotModel(modelname);
+                    Theme theme = new Theme(tname, " ", modelname);
+                    DBmanager.Themes.put(tname, theme);
+                    DBmanager.curr.close();
+                    DBmanager.curr = theme;
+                    Set<String> owners = DBmanager.plots.keySet();
+                    for(String s: owners){
+                        ArrayList<Plot> pl = DBmanager.plots.get(s);
+                        if(DBmanager.pastPlots.containsKey(s)){
+                            ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
+                            ppl.addAll(pl);
+                        }else{
+                            DBmanager.pastPlots.put(s, pl);
+                        }
+                    }
+                    DBmanager.plots = new HashMap<>();
+                    p.teleport(new Location(theme.getCent().getWorld(), theme.getCent().getX(), theme.getCent().getY()+1, theme.getCent().getZ()));
+    //                type = args[0];
+    //                ploc = p.getLocation();
+    //                conversationFactory.buildConversation((Conversable) sender).begin();
+    ////                p.teleport(DBmanager.curr.getCent());
+                    return true;
+                }else{
+                    p.sendMessage(Freebuild.prefix + "You crazy... you cant make plots here!!!!");
                     return true;
                 }
-                DBmanager.currModel = DBmanager.loadPlotModel(modelname);
-                Theme theme = new Theme(tname, " ", modelname);
-                DBmanager.Themes.put(tname, theme);
-                DBmanager.curr.close();
-                DBmanager.curr = theme;
-                Set<String> owners = DBmanager.plots.keySet();
-                for(String s: owners){
-                    ArrayList<Plot> pl = DBmanager.plots.get(s);
-                    if(DBmanager.pastPlots.containsKey(s)){
-                        ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
-                        ppl.addAll(pl);
-                    }else{
-                        DBmanager.pastPlots.put(s, pl);
-                    }
-                }
-                DBmanager.plots = new HashMap<>();
-                p.teleport(new Location(theme.getCent().getWorld(), theme.getCent().getX(), theme.getCent().getY()+1, theme.getCent().getZ()));
-//                type = args[0];
-//                ploc = p.getLocation();
-//                conversationFactory.buildConversation((Conversable) sender).begin();
-////                p.teleport(DBmanager.curr.getCent());
-                return true;
             }
             else if(args[0].equalsIgnoreCase("set")&&p.hasPermission("plotmanager.create") && DBmanager.curr == null){
-                //set and generate a theme with player at center
-                p.sendMessage(Freebuild.prefix + "Generating...");
-                String tname = "";
-                String modelname = "default";
-                int namebegin = 1;
-                if(args.length == 1){
-                    return false;
-                }
-                if(args[1].equals("-m") && args.length > 3){
-                    modelname = args[2];
-                    namebegin = 3;
-                    if(!DBmanager.modelExists(modelname)){
-                        p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
-                        p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                if(Freebuild.getPluginInstance().getConfig().getStringList("ValidWorlds").contains(p.getWorld().getName())){
+                    //set and generate a theme with player at center
+                    p.sendMessage(Freebuild.prefix + "Generating...");
+                    String tname = "";
+                    String modelname = "default";
+                    int namebegin = 1;
+                    if(args.length == 1){
+                        return false;
+                    }
+                    if(args[1].equals("-m") && args.length > 3){
+                        modelname = args[2];
+                        namebegin = 3;
+                        if(!DBmanager.modelExists(modelname)){
+                            p.sendMessage(Freebuild.prefix + "Model '"+modelname+"' doesn't exist");
+                            p.sendMessage(Freebuild.prefix + "To see available models, use /theme listmodels");
+                            return true;
+                        }
+                    }
+                    for(String s : Arrays.asList(args).subList(namebegin, args.length)){
+                        tname += s + " ";
+                    }
+                    tname = tname.trim();
+                    if(tname.length() > 30) {
+                        p.sendMessage(Freebuild.prefix + "Provided name is too long");
                         return true;
                     }
-                }
-                for(String s : Arrays.asList(args).subList(namebegin, args.length)){
-                    tname += s + " ";
-                }
-                tname = tname.trim();
-                if(tname.length() > 30) {
-                    p.sendMessage(Freebuild.prefix + "Provided name is too long");
+                    DBmanager.currModel = DBmanager.loadPlotModel(modelname);
+                    Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
+                    DBmanager.Themes.put(tname, theme);
+                    if(DBmanager.curr != null) {
+                        DBmanager.curr.close();
+                    }
+                    DBmanager.curr = theme;
+                    Set<String> owners = DBmanager.plots.keySet();
+                    for(String s: owners){
+                        ArrayList<Plot> pl = DBmanager.plots.get(s);
+                        if(DBmanager.pastPlots.containsKey(s)){
+                            ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
+                            ppl.addAll(pl);
+                        }else{
+                            DBmanager.pastPlots.put(s, pl);
+                        }
+                    }
+                    DBmanager.plots = new HashMap<>();
+                    return true;
+                }else{
+                    p.sendMessage(Freebuild.prefix + "You crazy... you cant make plots here!!!!");
                     return true;
                 }
-                DBmanager.currModel = DBmanager.loadPlotModel(modelname);
-                Theme theme = new Theme(tname, " ", p.getLocation(), modelname);
-                DBmanager.Themes.put(tname, theme);
-                if(DBmanager.curr != null) {
-                    DBmanager.curr.close();
-                }
-                DBmanager.curr = theme;
-                Set<String> owners = DBmanager.plots.keySet();
-                for(String s: owners){
-                    ArrayList<Plot> pl = DBmanager.plots.get(s);
-                    if(DBmanager.pastPlots.containsKey(s)){
-                        ArrayList<Plot> ppl = DBmanager.pastPlots.get(s);
-                        ppl.addAll(pl);
-                    }else{
-                        DBmanager.pastPlots.put(s, pl);
-                    }
-                }
-                DBmanager.plots = new HashMap<>();
-                return true;
             }
             else if(args[0].equalsIgnoreCase("createmodel") && p.hasPermission("plotmanager.create")){
                 if(args.length >= 2){
