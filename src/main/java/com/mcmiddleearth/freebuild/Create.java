@@ -121,7 +121,8 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
             }
             else if(args[0].equalsIgnoreCase("warp")){
                 if(DBmanager.curr != null){
-                    p.teleport(DBmanager.curr.getCent());
+                    Location cent = DBmanager.curr.getCent();
+                    p.teleport(new Location(cent.getWorld(), cent.getBlockX(), cent.getBlockY()+1, cent.getBlockZ()));
                     p.sendMessage("Teleported to current theme!");
                 }else{
                     p.sendMessage("There is no current theme.");
