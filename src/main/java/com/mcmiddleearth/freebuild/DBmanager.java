@@ -95,7 +95,7 @@ public class DBmanager implements Listener{
                     writer.println(curr.getModel());
                     writer.println(curr.getURL());
                     writer.println("Plots:");
-                    System.out.println(curr.getPlots().toString());
+                    //System.out.println(curr.getPlots().toString());
                     for(Plot p : curr.getPlots()){
                         String s = p.getCorner().getWorld().getName() + " , " + 
                                    p.getCorner().getBlockX() + " , " + 
