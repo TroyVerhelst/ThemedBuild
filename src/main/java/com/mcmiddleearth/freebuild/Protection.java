@@ -21,6 +21,7 @@ package com.mcmiddleearth.freebuild;
 
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -35,15 +36,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
@@ -151,7 +154,9 @@ public final class Protection implements Listener{
             Player p = e.getPlayer();
             ItemStack item = e.getItem();
             Material material = item.getType();
-            if(material == Material.INK_SACK && ((Dye) item.getData()).getColor() == DyeColor.WHITE){
+            if(material == Material.INK_SACK && ((Dye) item.getData()).getColor() == DyeColor.WHITE
+                    || (item.getItemMeta().hasDisplayName() 
+                         && item.getItemMeta().getDisplayName().startsWith("Placeable"))) {
                 blockPlaceProtect(b,p,e);
             }
         }
@@ -257,12 +262,49 @@ public final class Protection implements Listener{
         Entity removerEntity = entityEvent.getRemover();
         Player p = (Player) removerEntity;
         
-        if(!canBuild){
-            if(!p.hasPermission("plotmanager.create")) {
-                if(e.getEntity() instanceof Painting || e.getEntity() instanceof ItemFrame) {
-                    e.setCancelled(true);
-                }
-            }
+        if(e.getEntity() instanceof Painting || e.getEntity() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getEntity().getLocation()),p,e);
         }
     }
+    
+    @EventHandler
+    public void onHangingPlace(HangingPlaceEvent e)
+    {
+        if(DBmanager.curr == null || !e.getEntity().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
+        Player p = e.getPlayer();
+        
+        if(e.getEntity() instanceof Painting || e.getEntity() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getEntity().getLocation()),p,e);
+        }
+    }
+    
+    @EventHandler
+    public void onItemFrameRotate(PlayerInteractEntityEvent e)
+    {
+        if(DBmanager.curr == null || !e.getRightClicked().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
+        Player p = e.getPlayer();
+        
+        if(e.getRightClicked() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getRightClicked().getLocation()),p,e);
+        }
+    }
+    
+    @EventHandler
+    public void onRemoveItemFromItemFrame(EntityDamageByEntityEvent e)
+    {
+        if(DBmanager.curr == null || !e.getEntity().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
+        Entity removerEntity = e.getDamager();
+        Player p = (Player) removerEntity;
+        
+        if(e.getEntity() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getEntity().getLocation()),p,e);
+        }
+    }
+
 }
