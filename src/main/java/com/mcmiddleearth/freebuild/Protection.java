@@ -281,14 +281,14 @@ public final class Protection implements Listener{
     }
     
     @EventHandler
-    public void onItemFrameRotate(PlayerInteractEntityEvent e)
+    public void onHangingInteract(PlayerInteractEntityEvent e)
     {
         if(DBmanager.curr == null || !e.getRightClicked().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
             return;
         }
         Player p = e.getPlayer();
         
-        if(e.getRightClicked() instanceof ItemFrame) {
+        if(e.getRightClicked() instanceof Painting || e.getRightClicked() instanceof ItemFrame) {
             blockPlaceProtect(p.getWorld().getBlockAt(e.getRightClicked().getLocation()),p,e);
         }
     }
