@@ -55,34 +55,13 @@ public final class Protection implements Listener{
     boolean canBuild;
     //on relog cant build
     
-    public boolean allowBuild(Player p, Location location) {
-        if(DBmanager.curr == null || !location.getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
+    public static boolean denyBuild(Player p, Location location) {
+        if(DBmanager.curr == null || !location.getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
             return false;
-        Location ploc=location;
-        if(p.hasPermission("plotmanager.create"))
-            return true;
-        if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
-            List<Plot> pPlots = DBmanager.plots.get(p.getUniqueId().toString());
-            for(Plot plot : pPlots){
-                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
-                    return true;
-                }
-            }
         }
-        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getUniqueId().toString())){
-            List<Plot> pPlots = DBmanager.pastPlots.get(p.getUniqueId().toString());
-            for(Plot plot : pPlots){
-                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    public boolean denyBuild(Player p, Location location) {
-        if(DBmanager.curr == null || !location.getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
+        if(p.hasPermission("plotmanager.create")) {
             return false;
+        }
         Location ploc=location;
         if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
             List<Plot> pPlots = DBmanager.plots.get(p.getUniqueId().toString());
