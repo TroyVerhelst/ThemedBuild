@@ -57,12 +57,12 @@ public class Theme {
     @Getter @Setter
     private String URL = "null";
     
-    public Theme(String name, String url, String model){
+    public Theme(String name, String url, String model, World w){
         int sizez = DBmanager.currModel.getSizez();
-        int sizez2 = DBmanager.curr.plots.get(0).getSizeZ();
+        int sizez2 = (DBmanager.curr != null ? DBmanager.curr.plots.get(0).getSizeZ() : 0);
         this.theme = name;
         this.model = model;
-        Location ocent = DBmanager.curr.getCent().clone();
+        Location ocent = (DBmanager.curr != null ? DBmanager.curr.getCent().clone() : w.getSpawnLocation().clone());
         ocent.add(0, 0, sizez+sizez2+13);
         this.cent=ocent;
         this.Generate();

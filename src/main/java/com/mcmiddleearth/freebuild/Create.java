@@ -19,11 +19,8 @@
 
 package com.mcmiddleearth.freebuild;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -148,14 +145,21 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 return true;
             }
             else if(args[0].equalsIgnoreCase("unclaim")&&p.hasPermission("plotmanager.create")){
-                Set<String> keys = DBmanager.plots.keySet();
-                List<Plot> pPlots;
-                for(String k : keys){
-                    pPlots = DBmanager.plots.get(k);
-                    for(Plot plot : pPlots){
+                for(Map.Entry<String, ArrayList<Plot>> e : DBmanager.plots.entrySet()){
+                    for(Plot plot : (ArrayList<Plot>) e.getValue().clone()){
                         if(plot.isIn(p.getLocation())) {
                             plot.unclaim();
-                            pPlots.remove(plot);
+                            e.getValue().remove(plot);
+                            p.sendMessage(Freebuild.prefix + "Plot unclaimed");
+                            return true;
+                        }
+                    }
+                }
+                for(Map.Entry<String, ArrayList<Plot>> e : DBmanager.pastPlots.entrySet()){
+                    for(Plot plot : (ArrayList<Plot>) e.getValue().clone()){
+                        if(plot.isIn(p.getLocation())) {
+                            plot.unclaim();
+                            e.getValue().remove(plot);
                             p.sendMessage(Freebuild.prefix + "Plot unclaimed");
                             return true;
                         }
@@ -192,9 +196,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         return true;
                     }
                     DBmanager.currModel = DBmanager.loadPlotModel(modelname);
-                    Theme theme = new Theme(tname, " ", modelname);
+                    Theme theme = new Theme(tname, " ", modelname, p.getWorld());
                     DBmanager.Themes.put(tname, theme);
-                    DBmanager.curr.close();
+                    if(DBmanager.curr != null) {
+                        DBmanager.curr.close();
+                    }
                     DBmanager.curr = theme;
                     Set<String> owners = DBmanager.plots.keySet();
                     for(String s: owners){
@@ -462,7 +468,7 @@ class finished extends MessagePrompt {
         if(type.equalsIgnoreCase("set")){
             theme = new Theme((String) context.getSessionData("title"), (String) context.getSessionData("url"), ploc, "default");
         }else{
-            theme = new Theme((String) context.getSessionData("title"), (String) context.getSessionData("url"), "default");
+            theme = new Theme((String) context.getSessionData("title"), (String) context.getSessionData("url"), "default", ((Player) context.getForWhom()).getWorld());
         }
         
         DBmanager.Themes.put((String) context.getSessionData("title"), theme);
