@@ -21,6 +21,8 @@ package com.mcmiddleearth.freebuild;
 
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -55,6 +57,11 @@ public class Freebuild extends JavaPlugin{
         DBmanager.save();
 
     }
+    
+    public static boolean denyBuild(Player p, Location location) {
+        return Protection.denyBuild(p,location);
+    }
+
 }
 
 class LoadScheduler extends BukkitRunnable {

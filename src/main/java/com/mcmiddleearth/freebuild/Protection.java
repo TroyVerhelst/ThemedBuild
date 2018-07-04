@@ -35,7 +35,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -55,6 +54,34 @@ import org.bukkit.material.Dye;
 public final class Protection implements Listener{
     boolean canBuild;
     //on relog cant build
+    
+    public static boolean denyBuild(Player p, Location location) {
+        if(DBmanager.curr == null || !location.getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return false;
+        }
+        if(p.hasPermission("plotmanager.create")) {
+            return false;
+        }
+        Location ploc=location;
+        if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
+            List<Plot> pPlots = DBmanager.plots.get(p.getUniqueId().toString());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    return false;
+                }
+            }
+        }
+        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getUniqueId().toString())){
+            List<Plot> pPlots = DBmanager.pastPlots.get(p.getUniqueId().toString());
+            for(Plot plot : pPlots){
+                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.isCancelled() || DBmanager.curr == null || !event.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
@@ -151,7 +178,7 @@ public final class Protection implements Listener{
             Player p = e.getPlayer();
             ItemStack item = e.getItem();
             Material material = item.getType();
-            if(material == Material.INK_SACK && ((Dye) item.getData()).getColor() == DyeColor.WHITE){
+            if(material == Material.INK_SACK && ((Dye) item.getData()).getColor() == DyeColor.WHITE) {
                 blockPlaceProtect(b,p,e);
             }
         }
@@ -257,12 +284,9 @@ public final class Protection implements Listener{
         Entity removerEntity = entityEvent.getRemover();
         Player p = (Player) removerEntity;
         
-        if(!canBuild){
-            if(!p.hasPermission("plotmanager.create")) {
-                if(e.getEntity() instanceof Painting || e.getEntity() instanceof ItemFrame) {
-                    e.setCancelled(true);
-                }
-            }
+        if(e.getEntity() instanceof Painting || e.getEntity() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getEntity().getLocation()),p,e);
         }
     }
+    
 }
