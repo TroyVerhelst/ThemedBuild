@@ -192,9 +192,11 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                         return true;
                     }
                     DBmanager.currModel = DBmanager.loadPlotModel(modelname);
-                    Theme theme = new Theme(tname, " ", modelname);
+                    Theme theme = new Theme(tname, " ", modelname, p.getWorld());
                     DBmanager.Themes.put(tname, theme);
-                    DBmanager.curr.close();
+                    if(DBmanager.curr != null) {
+                        DBmanager.curr.close();
+                    }
                     DBmanager.curr = theme;
                     Set<String> owners = DBmanager.plots.keySet();
                     for(String s: owners){
@@ -462,7 +464,7 @@ class finished extends MessagePrompt {
         if(type.equalsIgnoreCase("set")){
             theme = new Theme((String) context.getSessionData("title"), (String) context.getSessionData("url"), ploc, "default");
         }else{
-            theme = new Theme((String) context.getSessionData("title"), (String) context.getSessionData("url"), "default");
+            theme = new Theme((String) context.getSessionData("title"), (String) context.getSessionData("url"), "default", ((Player) context.getForWhom()).getWorld());
         }
         
         DBmanager.Themes.put((String) context.getSessionData("title"), theme);
