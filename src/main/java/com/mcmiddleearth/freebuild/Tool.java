@@ -19,6 +19,7 @@
 package com.mcmiddleearth.freebuild;
 
 import java.util.ArrayList;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -28,21 +29,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
 /**
  *
  * @author Ivan1pl
  */
 public final class Tool implements Listener{
-    public static Material ModelTool;
-    public static Material liquidTool;
-    public static Material fireTool;
+    
+    @Setter
+    private static Material modelTool;
+    @Setter
+    private static Material liquidTool;
+    @Setter
+    private static Material fireTool;
     
     @EventHandler
     public void onPlayerUseModelTool(PlayerInteractEvent e){
         if(!e.isCancelled() && e.getPlayer().hasPermission("plotmanager.create") && DBmanager.IncompleteModel != null
-                && e.getPlayer().getItemInHand().getType() == ModelTool && e.hasBlock()){
+                && e.getPlayer().getItemInHand().getType() == getModelTool() && e.hasBlock()){
             Action action = e.getAction();
             if(action == Action.LEFT_CLICK_BLOCK){
                 DBmanager.IncompleteModel.setPoint1(e.getClickedBlock().getLocation());
@@ -82,7 +86,7 @@ public final class Tool implements Listener{
     
     @EventHandler
     public void onPlayerUseLiquidTool(PlayerInteractEvent e) {
-        if(!e.isCancelled() && e.getPlayer().getItemInHand().getType() == liquidTool && e.hasBlock()) {
+        if(!e.isCancelled() && e.getPlayer().getItemInHand().getType() == getLiquidTool() && e.hasBlock()) {
             Location l = e.getClickedBlock().getRelative(e.getBlockFace()).getLocation();
             if(interactionAllowed(e.getPlayer(),l)) {
                 if(l.getBlock().isEmpty() || l.getBlock().isLiquid()) {
@@ -106,7 +110,7 @@ public final class Tool implements Listener{
     
     @EventHandler
     public void onPlayerUseFireTool(PlayerInteractEvent e) {
-        if(!e.isCancelled() && e.getPlayer().getItemInHand().getType() == fireTool && e.hasBlock()) {
+        if(!e.isCancelled() && e.getPlayer().getItemInHand().getType() == getFireTool() && e.hasBlock()) {
             Location l = e.getClickedBlock().getRelative(e.getBlockFace()).getLocation();
             if(interactionAllowed(e.getPlayer(),l)) {
                 if(l.getBlock().getType() == Material.AIR) {
@@ -116,5 +120,15 @@ public final class Tool implements Listener{
                 }
             }
         }
+    }
+    
+    public static Material getFireTool() {
+        return (fireTool!=null?fireTool:Material.IRON_SWORD);
+    }
+    public static Material getLiquidTool() {
+        return (liquidTool!=null?liquidTool:Material.STONE_SWORD);
+    }
+    public static Material getModelTool() {
+        return (modelTool!=null?modelTool:Material.WOODEN_SWORD);
     }
 }

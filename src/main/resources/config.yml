@@ -4,4 +4,4 @@ modelTool: WOOD_SWORD
 liquidTool: STONE_SWORD
 fireTool: IRON_SWORD
 ValidWorlds:
- - plotworld
+ - theme
