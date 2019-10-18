@@ -41,9 +41,12 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Dye;
@@ -51,39 +54,9 @@ import org.bukkit.material.Dye;
  *
  * @author Donovan, aaldim, Ivan1pl
  */
-public final class Protection implements Listener{
+public final class Protection_1 implements Listener{
     boolean canBuild;
     //on relog cant build
-    
-    public static boolean denyBuild(Player p, Location location) {
-//Logger.getGlobal().info("Freebuild deny: ?");
-    if(DBmanager.curr == null || !location.getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
-            return false;
-        }
-        if(p.hasPermission("plotmanager.create")) {
-            return false;
-        }
-        Location ploc=location;
-        if(DBmanager.plots.containsKey(p.getUniqueId().toString())){
-            List<Plot> pPlots = DBmanager.plots.get(p.getUniqueId().toString());
-            for(Plot plot : pPlots){
-                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
-                    return false;
-                }
-            }
-        }
-        if(DBmanager.BuildPastPlots && DBmanager.pastPlots.containsKey(p.getUniqueId().toString())){
-            List<Plot> pPlots = DBmanager.pastPlots.get(p.getUniqueId().toString());
-            for(Plot plot : pPlots){
-                if(ploc.getWorld().equals(plot.getW())&&((ploc.getBlockX()<plot.Boundx[1] && ploc.getBlockX()>plot.Boundx[0])&&(ploc.getBlockZ()<plot.Boundz[1] && ploc.getBlockZ()>plot.Boundz[0]))){
-                    return false;
-                }
-            }
-        }
-//Logger.getGlobal().info("Freebuild deny: true");
-        return true;
-    }
-    
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.isCancelled() || DBmanager.curr == null || !event.getBlock().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName()))
@@ -166,7 +139,7 @@ public final class Protection implements Listener{
         Block b = e.getBlock();
         blockPlaceProtect(b,p,e);
         if(!e.isCancelled() && (b.getBlockData() instanceof Bed)){
-            b = b.getRelative(((Bed) b.getBlockData()).getFacing());
+            b = b.getRelative(((Bed) b.getState().getData()).getFacing());
             blockPlaceProtect(b,p,e);
         }
     }
@@ -180,7 +153,9 @@ public final class Protection implements Listener{
             Player p = e.getPlayer();
             ItemStack item = e.getItem();
             Material material = item.getType();
-            if(material == Material.INK_SAC && ((Dye) item.getData()).getColor() == DyeColor.WHITE) {
+            if(material == Material.INK_SAC && ((Dye) item.getData()).getColor() == DyeColor.WHITE
+                    || (item.getItemMeta().hasDisplayName() 
+                         && item.getItemMeta().getDisplayName().startsWith("Placeable"))) {
                 blockPlaceProtect(b,p,e);
             }
         }
@@ -291,4 +266,44 @@ public final class Protection implements Listener{
         }
     }
     
+    @EventHandler
+    public void onHangingPlace(HangingPlaceEvent e)
+    {
+        if(DBmanager.curr == null || !e.getEntity().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
+        Player p = e.getPlayer();
+        
+        if(e.getEntity() instanceof Painting || e.getEntity() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getEntity().getLocation()),p,e);
+        }
+    }
+    
+    @EventHandler
+    public void onHangingInteract(PlayerInteractEntityEvent e)
+    {
+        if(DBmanager.curr == null || !e.getRightClicked().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
+        Player p = e.getPlayer();
+        
+        if(e.getRightClicked() instanceof Painting || e.getRightClicked() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getRightClicked().getLocation()),p,e);
+        }
+    }
+    
+    @EventHandler
+    public void onRemoveItemFromItemFrame(EntityDamageByEntityEvent e)
+    {
+        if(DBmanager.curr == null || !e.getEntity().getWorld().getName().equals(DBmanager.curr.getCent().getWorld().getName())){
+            return;
+        }
+        Entity removerEntity = e.getDamager();
+        Player p = (Player) removerEntity;
+        
+        if(e.getEntity() instanceof ItemFrame) {
+            blockPlaceProtect(p.getWorld().getBlockAt(e.getEntity().getLocation()),p,e);
+        }
+    }
+
 }

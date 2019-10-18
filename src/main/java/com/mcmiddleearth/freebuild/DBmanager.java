@@ -50,11 +50,11 @@ public class DBmanager implements Listener{
     
     public static HashMap<String, Theme> Themes = new HashMap<>();
     
-    public static PlotModel IncompleteModel = null;
+    public static IPlotModel IncompleteModel = null;
     
     public static Theme curr;
     
-    public static PlotModel currModel;
+    public static IPlotModel currModel;
     
     private static final File Theme_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
     
@@ -70,13 +70,16 @@ public class DBmanager implements Listener{
     
     public static boolean loaded;
     
+    private static String oldPlotFileExtension = "MCplot";
+    private static String newPlotFileExtension = "MCMEplot";
+    
     static{
         if(!Theme_dat.exists()){
             Theme_dat.mkdirs();
         }
         if(!Plot_dat.exists()){
             Plot_dat.mkdirs();
-            File out = new File(Plot_dat + System.getProperty("file.separator") + "default.MCplot");
+            File out = new File(Plot_dat + System.getProperty("file.separator") + "default."+oldPlotFileExtension);
             PlotModel.generateDefaultModel(out);
         }
         loaded = false;
@@ -88,7 +91,10 @@ public class DBmanager implements Listener{
             try {
                 FileWriter fr = new FileWriter(start.toString());
                 try (PrintWriter writer = new PrintWriter(fr)) {
-                    writer.println(curr.getCent().getWorld().getName() + " , " + curr.getCent().getBlockX() + " , " + curr.getCent().getBlockY() + " , " + curr.getCent().getBlockZ());
+                    writer.println(curr.getCent().getWorld().getName() + " , " 
+                                 + curr.getCent().getBlockX() + " , " 
+                                 + curr.getCent().getBlockY() + " , " 
+                                 + curr.getCent().getBlockZ());
                     //------
                     writer.println(curr.getX_left());
                     writer.println(curr.getX_right());
@@ -119,27 +125,49 @@ public class DBmanager implements Listener{
         }
         Freebuild.getPluginInstance().saveConfig();
     }
-    public static void savePlotModel(PlotModel model, Player p){
-        File out = new File(Plot_dat + System.getProperty("file.separator") + model.getName().replace(" ", "_") + ".MCplot");
+    public static void savePlotModel(IPlotModel model, Player p){
+        File out = new File(Plot_dat + System.getProperty("file.separator") 
+                           + model.getName().replace(" ", "_") + "."+newPlotFileExtension);
         model.saveModel(out,p);
         updateModelsList();
     }
     public static void deletePlotModel(String name){
-        File f = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
+        File f = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") 
+                                                                          + "."+oldPlotFileExtension);
+        if(f.exists()){
+            f.delete();
+        }
+        f = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") 
+                                                                          + "."+newPlotFileExtension);
         if(f.exists()){
             f.delete();
         }
     }
-    public static PlotModel loadPlotModel(String name){
-        File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") + ".MCplot");
-        PlotModel model = new PlotModel(name,in);
+    public static IPlotModel loadPlotModel(String name){
+        File in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") 
+                                                                           + "."+newPlotFileExtension);
+        IPlotModel model;
+        if(in.exists()) {
+            model = new MCMEStoragePlotModel(name,in);
+        } else {
+            in = new File(Plot_dat + System.getProperty("file.separator") + name.replace(" ", "_") 
+                                                                           + "."+oldPlotFileExtension);
+            model = new PlotModel(name,in);
+        }
         return model;
     }
     public static void updateModelsList(){
         Models = new ArrayList<>();
         for(File f: Plot_dat.listFiles()){
-            String name = f.getName().replace(".MCplot", "");
-            Models.add(name);
+            String name;
+            if(f.getName().endsWith("."+oldPlotFileExtension)) {
+                name = f.getName().replace("."+oldPlotFileExtension, "");
+            } else {
+                name = f.getName().replace("."+newPlotFileExtension, "");
+            }
+            if(!Models.contains(name)) {
+                Models.add(name);   
+            }
         }
     }
     public static boolean modelExists(String model){
@@ -154,9 +182,9 @@ public class DBmanager implements Listener{
         MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
         BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
-        Tool.ModelTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool"));
-        Tool.liquidTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("liquidTool"));
-        Tool.fireTool = Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("fireTool"));
+        Tool.setModelTool(Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool")));
+        Tool.setLiquidTool(Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("liquidTool")));
+        Tool.setFireTool(Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("fireTool")));
         updateModelsList();
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
@@ -236,6 +264,7 @@ public class DBmanager implements Listener{
         }
         loaded = true;
     }
+    
     @EventHandler
     public void onWorldSave(WorldSaveEvent e){
         DBmanager.save();

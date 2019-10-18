@@ -21,13 +21,16 @@ package com.mcmiddleearth.freebuild;
                 
 import java.util.ArrayList;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Slab;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 
 /**
@@ -128,24 +131,27 @@ public class Plot {
         }
     }
     private void Generate(){
+            BlockData borderBlockData = Bukkit.createBlockData(Material.STONE_SLAB);
+            ((Slab)borderBlockData).setType(Slab.Type.DOUBLE);
             for(int x = Boundx[0]; x < Boundx[1]; x++){
                 Location lc = new Location(w, x, corner.getBlockY(), Boundz[0]);
-                lc.getBlock().setType(Material.DOUBLE_STEP);
+                lc.getBlock().setBlockData(borderBlockData);
             }
             for(int x = Boundx[0]; x < Boundx[1]; x++){
                 Location lc = new Location(w, x, corner.getBlockY(), Boundz[1]);
-                lc.getBlock().setType(Material.DOUBLE_STEP);
+                lc.getBlock().setBlockData(borderBlockData);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
                 Location lc = new Location(w, Boundx[0], corner.getBlockY(), z);
-                lc.getBlock().setType(Material.DOUBLE_STEP);
+                lc.getBlock().setBlockData(borderBlockData);
             }
             for(int z = Boundz[0]; z < Boundz[1]; z++){
                 Location lc = new Location(w, Boundx[1], corner.getBlockY(), z);
-                lc.getBlock().setType(Material.DOUBLE_STEP);
+                lc.getBlock().setBlockData(borderBlockData);
             }
-            new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setType(Material.DOUBLE_STEP);
+            new Location(w, Boundx[1], corner.getBlockY(), Boundz[1]).getBlock().setBlockData(borderBlockData);
     }
+    
     public void assign(Player p){
         DBmanager.curr.getCurrplots().remove(this);
         this.p = p.getUniqueId().toString();
@@ -164,7 +170,7 @@ public class Plot {
             ps.add(this);
             DBmanager.plots.put(p.getUniqueId().toString(), ps);
         }else{
-            ArrayList<Plot> ps = new ArrayList<Plot>();
+            ArrayList<Plot> ps = new ArrayList<>();
             ps.add(this);
             DBmanager.plots.put(p.getUniqueId().toString(), ps);
         }
@@ -188,18 +194,21 @@ public class Plot {
                 plotsign.setType(Material.WALL_SIGN);
             }
         }
-        Sign plotSign = (Sign)plotsign.getState();
-        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.WALL_SIGN);
+        //Sign plotSign = (Sign)plotsign.getState();
+        //org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.WALL_SIGN);
+        WallSign plotSign = (WallSign) Bukkit.createBlockData(Material.WALL_SIGN);
         if(rotation == 1 || rotation == 2){
-            s.setFacingDirection(BlockFace.NORTH);
+            plotSign.setFacing(BlockFace.NORTH);
         }else{
-            s.setFacingDirection(BlockFace.SOUTH);
+            plotSign.setFacing(BlockFace.SOUTH);
         }
-        plotSign.setData(s);
-        plotSign.setLine(0, ChatColor.RED + "[ThemedBuild]");
-        plotSign.setLine(1, ChatColor.AQUA + DBmanager.curr.getTheme());
-        plotSign.setLine(2, ChatColor.GREEN + p.getName());
-        plotSign.update();
+        //plotSign.setData(s);
+        plotsign.setBlockData(plotSign,false);
+        org.bukkit.block.Sign sign = (org.bukkit.block.Sign) plotsign.getState();
+        sign.setLine(0, ChatColor.RED + "[ThemedBuild]");
+        sign.setLine(1, ChatColor.AQUA + DBmanager.curr.getTheme());
+        sign.setLine(2, ChatColor.GREEN + p.getName());
+        sign.update(true, false);
         p.teleport(getPlotSignLocation());
     }
     public Location getPlotSignLocation() {
@@ -247,7 +256,9 @@ public class Plot {
             new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.AIR);
         }
         clear();
-        DBmanager.curr.getCurrplots().add(this);
+        if(DBmanager.plots.get(p)!=null && DBmanager.plots.get(p).contains(this)) {
+            DBmanager.curr.getCurrplots().add(this);
+        }
         this.p = "";
         assigned = false;
     }
