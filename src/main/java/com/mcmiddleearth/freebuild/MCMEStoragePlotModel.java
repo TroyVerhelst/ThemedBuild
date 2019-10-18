@@ -22,6 +22,7 @@ package com.mcmiddleearth.freebuild;
 import com.mcmiddleearth.pluginutil.plotStoring.IStoragePlot;
 import com.mcmiddleearth.pluginutil.plotStoring.InvalidRestoreDataException;
 import com.mcmiddleearth.pluginutil.plotStoring.MCMEPlotFormat;
+import com.mcmiddleearth.pluginutil.plotStoring.StoragePlotSnapshot;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -45,7 +46,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
@@ -151,7 +151,7 @@ Logger.getGlobal().log(Level.INFO, "High: {0} {1} {2}", new Object[]{plot.getHig
                                                                     plot.getHighCorner().getBlockY(),
                                                                     plot.getHighCorner().getBlockZ()});
             p.sendMessage(Freebuild.prefix + "Getting blocks...");
-            final MCMEPlotFormat.StoragePlotSnapshot snapshot = new MCMEPlotFormat.StoragePlotSnapshot(plot);
+            final StoragePlotSnapshot snapshot = new StoragePlotSnapshot(plot);
             p.sendMessage(Freebuild.prefix + "Done");
             p.sendMessage(Freebuild.prefix + "Saving model...");
             try(ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
