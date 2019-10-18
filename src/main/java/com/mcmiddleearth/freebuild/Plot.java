@@ -247,7 +247,9 @@ public class Plot {
             new Location(w, corner.getBlockX()-1, corner.getBlockY()+1, corner.getBlockZ()).getBlock().setType(Material.AIR);
         }
         clear();
-        DBmanager.curr.getCurrplots().add(this);
+        if(DBmanager.plots.get(p)!=null && DBmanager.plots.get(p).contains(this)) {
+            DBmanager.curr.getCurrplots().add(this);
+        }
         this.p = "";
         assigned = false;
     }
