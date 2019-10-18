@@ -77,9 +77,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                             p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
                             p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
                         }
-                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.liquidTool);
-                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.liquidTool);
-                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.fireTool);
+                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.getLiquidTool());
+                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.getLiquidTool());
+                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.getFireTool());
                         return true;
                     }
                 }
@@ -94,9 +94,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                             p.sendMessage(Freebuild.prefix + "More information about this Themedbuild:");
                             p.sendMessage(ChatColor.GRAY + DBmanager.curr.getURL());
                         }
-                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.liquidTool);
-                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.liquidTool);
-                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.fireTool);
+                        p.sendMessage(ChatColor.WHITE + "To place lava, left click with " + ChatColor.GREEN + Tool.getLiquidTool());
+                        p.sendMessage(ChatColor.WHITE + "To place water, right click with " + ChatColor.GREEN + Tool.getLiquidTool());
+                        p.sendMessage(ChatColor.WHITE + "To place fire, right click with " + ChatColor.GREEN + Tool.getFireTool());
                         return true;
                     }
                 }
@@ -277,9 +277,9 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
             }
             else if(args[0].equalsIgnoreCase("createmodel") && p.hasPermission("plotmanager.create")){
                 if(args.length >= 2){
-                    DBmanager.IncompleteModel = new PlotModel(args[1]);
+                    DBmanager.IncompleteModel = new MCMEStoragePlotModel(args[1]);
                     p.sendMessage(Freebuild.prefix + "Empty model created");
-                    ItemStack tool = new ItemStack(Tool.ModelTool);
+                    ItemStack tool = new ItemStack(Tool.getModelTool());
                     ItemMeta tmet = tool.getItemMeta();
                     tmet.setDisplayName("Model Selector");
                     tmet.setLore(Arrays.asList(new String[] {"Use this tool to set plot corners", "Right Click - set point 1", "Left click - set point 2"}));

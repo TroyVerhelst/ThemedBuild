@@ -32,6 +32,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Fence;
 import org.bukkit.material.Sandstone;
 import org.bukkit.material.Stairs;
 
@@ -91,10 +93,10 @@ public class Theme {
             l.add(3, 1, 0);
         }
         Block sign = l.getBlock();
-        sign.setType(Material.SIGN_POST);
-        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.SIGN_POST);
+        sign.setType(Material.SIGN);
+        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.SIGN);
         s.setFacingDirection(face);
-        sign.setType(Material.SIGN_POST);
+        sign.setType(Material.SIGN);
         Sign plotSign = (Sign) sign.getState();
         plotSign.setData(s);
         plotSign.setLine(0, ChatColor.BOLD + "Main");
@@ -140,35 +142,46 @@ public class Theme {
         this.genPlots(true);
     }
     private void genGate(World w, int x, int y, int z, BlockFace direction){
-        new Location(w,x,y,z+1).getBlock().setType(Material.FENCE);
-        new Location(w,x,y,z+2).getBlock().setType(Material.FENCE);
-        new Location(w,x,y+1,z+1).getBlock().setType(Material.FENCE);
-        new Location(w,x,y+1,z+2).getBlock().setType(Material.FENCE);
-        new Location(w,x,y,z-1).getBlock().setType(Material.FENCE);
-        new Location(w,x,y,z-2).getBlock().setType(Material.FENCE);
-        new Location(w,x,y+1,z-1).getBlock().setType(Material.FENCE);
-        new Location(w,x,y+1,z-2).getBlock().setType(Material.FENCE);
-        new Location(w,x,y+2,z+1).getBlock().setType(Material.FENCE);
-        new Location(w,x,y+2,z).getBlock().setType(Material.FENCE);
-        new Location(w,x,y+2,z-1).getBlock().setType(Material.FENCE);
+        Fence both = (Fence) Bukkit.createBlockData(Material.OAK_FENCE);
+        both.setFace(BlockFace.NORTH, true);
+        both.setFace(BlockFace.SOUTH, true);
+        both.setFace(direction, true);
+        Fence north = (Fence) Bukkit.createBlockData(Material.OAK_FENCE);
+        north.setFace(BlockFace.NORTH, true);
+        Fence south = (Fence) Bukkit.createBlockData(Material.OAK_FENCE);
+        south.setFace(BlockFace.SOUTH, true);
+        new Location(w,x,y,z+1).getBlock().setBlockData(south,false);
+        new Location(w,x,y,z+2).getBlock().setBlockData(north,false);
+        new Location(w,x,y+1,z+1).getBlock().setBlockData(south,false);
+        new Location(w,x,y+1,z+2).getBlock().setBlockData(north,false);
+        new Location(w,x,y,z-1).getBlock().setBlockData(north,false);
+        new Location(w,x,y,z-2).getBlock().setBlockData(south,false);
+        new Location(w,x,y+1,z-1).getBlock().setBlockData(north,false);
+        new Location(w,x,y+1,z-2).getBlock().setBlockData(south,false);
+        new Location(w,x,y+2,z+1).getBlock().setBlockData(north,false);
+        new Location(w,x,y+2,z).getBlock().setBlockData(both,false);
+        new Location(w,x,y+2,z-1).getBlock().setBlockData(south,false);
+        BlockData data = Bukkit.createBlockData(Material.WALL_SIGN);
         Block sign;
-        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.WALL_SIGN);
-        if(direction == BlockFace.EAST){
-            sign = new Location(w,x+1,y+2,z).getBlock();
+        org.bukkit.block.data.type.WallSign s = (org.bukkit.block.data.type.WallSign) data;
+        s.setFacing(direction);
+        switch (direction) {
+            case EAST:
+                sign = new Location(w,x+1,y+2,z).getBlock();
+                break;
+            case WEST:
+                sign = new Location(w,x-1,y+2,z).getBlock();
+                break;
+            default:
+                return;
         }
-        else if(direction == BlockFace.WEST){
-            sign = new Location(w,x-1,y+2,z).getBlock();
-        }
-        else{
-            return;
-        }
-        s.setFacingDirection(direction);
         sign.setType(Material.WALL_SIGN);
         Sign plotSign = (Sign) sign.getState();
-        plotSign.setData(s);
+        plotSign.setBlockData(s);
+        //plotSign.setData(s);
         plotSign.setLine(0, "");
-        plotSign.setLine(1, ChatColor.RED + "Closed");
-        plotSign.update();
+        plotSign.setLine(1, ""+ChatColor.RED + ChatColor.BOLD + "Closed");
+        plotSign.update(true, false);
     }
     public void close(){
         genGate(getCent().getWorld(), getCent().getBlockX()-3, getCent().getBlockY()+1, getCent().getBlockZ(), BlockFace.EAST);

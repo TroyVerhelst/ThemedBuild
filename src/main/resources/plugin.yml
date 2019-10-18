@@ -1,7 +1,8 @@
 name: Freebuild
 main: com.mcmiddleearth.freebuild.Freebuild
-version: 1.2
+version: ${project.version}
 description: Freebuild controler
+api-version: 1.13
 commands:
   theme:
     description: new plot(s)
