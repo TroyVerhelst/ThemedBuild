@@ -46,6 +46,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
@@ -205,13 +206,18 @@ Logger.getGlobal().info("Written bytes: "+sum);
     
     @Override
     public void generate(Location l, BlockFace direction){
-        Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
-        int rotations = (direction.equals(BlockFace.NORTH)?0:2);
-        try(DataInputStream in = new DataInputStream(new ByteArrayInputStream(nbtData))) {
-            new MCMEPlotFormat().load(corner, rotations, null, in);
-        } catch (IOException | InvalidRestoreDataException ex) {
-            Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        final Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        final int rotations = (direction.equals(BlockFace.NORTH)?0:2);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try(DataInputStream in = new DataInputStream(new ByteArrayInputStream(nbtData))) {
+                    new MCMEPlotFormat().load(corner, rotations, null, in);
+                } catch (IOException | InvalidRestoreDataException ex) {
+                    Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }.runTaskLater(Freebuild.getPluginInstance(),15);
         /*Location iter;
         for(int x = 0; x < sizex; ++x){
         for(int y = 0; y < sizey; ++y){

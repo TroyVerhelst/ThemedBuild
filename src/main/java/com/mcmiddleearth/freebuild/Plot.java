@@ -230,7 +230,7 @@ public class Plot {
                     new Location(w,x,y,z).getBlock().setType(Material.DIRT);
                 }
                 new Location(w,x,corner.getBlockY()-1,z).getBlock().setType(Material.AIR);
-                new Location(w,x,corner.getBlockY()-1,z).getBlock().setType(Material.GRASS);
+                new Location(w,x,corner.getBlockY()-1,z).getBlock().setType(Material.GRASS_BLOCK);
                 for(int y=corner.getBlockY(); y<256; ++y) {
                     new Location(w,x,y,z).getBlock().setType(Material.AIR);
                 }
