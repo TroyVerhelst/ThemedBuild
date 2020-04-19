@@ -1,23 +1,23 @@
 /*
- * This file is part of Freebuild.
+ * This file is part of ThemedBuild.
  * 
- * Freebuild is free software: you can redistribute it and/or modify
+ * ThemedBuild is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * Freebuild is distributed in the hope that it will be useful,
+ * ThemedBuild is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with Freebuild.  If not, see <http://www.gnu.org/licenses/>.
+ * along with ThemedBuild.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * 
  */
 
-package com.mcmiddleearth.freebuild;
+package com.mcmiddleearth.themedbuild.domain;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.mcmiddleearth.themedbuild.ThemedBuildPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -56,9 +58,9 @@ public class DBmanager implements Listener{
     
     public static IPlotModel currModel;
     
-    private static final File Theme_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
+    private static final File Theme_dat = new File(ThemedBuildPlugin.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Themes");
     
-    private static final File Plot_dat = new File(Freebuild.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
+    private static final File Plot_dat = new File(ThemedBuildPlugin.getPluginInstance().getDataFolder() + System.getProperty("file.separator") + "Plots");
     
     public static int MaxPlotsPerPlayer;
     
@@ -121,9 +123,9 @@ public class DBmanager implements Listener{
             } catch (IOException ex) {
                 Logger.getLogger(DBmanager.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Freebuild.getPluginInstance().getConfig().set("currTheme", curr.getTheme());
+            ThemedBuildPlugin.getPluginInstance().getConfig().set("currTheme", curr.getTheme());
         }
-        Freebuild.getPluginInstance().saveConfig();
+        ThemedBuildPlugin.getPluginInstance().saveConfig();
     }
     public static void savePlotModel(IPlotModel model, Player p){
         File out = new File(Plot_dat + System.getProperty("file.separator") 
@@ -179,18 +181,18 @@ public class DBmanager implements Listener{
         return false;
     }
     public static void loadAll(){
-        MaxPlotsPerPlayer = Freebuild.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
+        MaxPlotsPerPlayer = ThemedBuildPlugin.getPluginInstance().getConfig().getInt("maxPlotsPerPlayer");
         InfinitePlotsPerPlayer = (MaxPlotsPerPlayer < 0);
-        BuildPastPlots = Freebuild.getPluginInstance().getConfig().getBoolean("buildPastPlots");
-        Tool.setModelTool(Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("modelTool")));
-        Tool.setLiquidTool(Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("liquidTool")));
-        Tool.setFireTool(Material.getMaterial(Freebuild.getPluginInstance().getConfig().getString("fireTool")));
+        BuildPastPlots = ThemedBuildPlugin.getPluginInstance().getConfig().getBoolean("buildPastPlots");
+        Tool.setModelTool(Material.getMaterial(ThemedBuildPlugin.getPluginInstance().getConfig().getString("modelTool")));
+        Tool.setLiquidTool(Material.getMaterial(ThemedBuildPlugin.getPluginInstance().getConfig().getString("liquidTool")));
+        Tool.setFireTool(Material.getMaterial(ThemedBuildPlugin.getPluginInstance().getConfig().getString("fireTool")));
         updateModelsList();
         for(File f : Theme_dat.listFiles()){
             String name = f.getName().replace("_", " ");
             name = name.replace(".MCtheme", "");
             try {
-                String curr1 = Freebuild.getPluginInstance().getConfig().getString("currTheme");
+                String curr1 = ThemedBuildPlugin.getPluginInstance().getConfig().getString("currTheme");
                 boolean isCurrent = name.equalsIgnoreCase(curr1);
                 Scanner s;
                 s = new Scanner(f);

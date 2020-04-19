@@ -1,25 +1,24 @@
 /*
- * This file is part of Freebuild.
+ * This file is part of ThemedBuild.
  * 
- * Freebuild is free software: you can redistribute it and/or modify
+ * ThemedBuild is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * Freebuild is distributed in the hope that it will be useful,
+ * ThemedBuild is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with Freebuild.  If not, see <http://www.gnu.org/licenses/>.
+ * along with ThemedBuild.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * 
  */
-package com.mcmiddleearth.freebuild;
+package com.mcmiddleearth.themedbuild.domain;
 
-import java.util.ArrayList;
-import lombok.Setter;
+import com.mcmiddleearth.themedbuild.ThemedBuildPlugin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -30,17 +29,16 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Ivan1pl
  */
 public final class Tool implements Listener{
     
-    @Setter
     private static Material modelTool;
-    @Setter
     private static Material liquidTool;
-    @Setter
     private static Material fireTool;
     
     @EventHandler
@@ -50,12 +48,12 @@ public final class Tool implements Listener{
             Action action = e.getAction();
             if(action == Action.LEFT_CLICK_BLOCK){
                 DBmanager.IncompleteModel.setPoint1(e.getClickedBlock().getLocation());
-                e.getPlayer().sendMessage(Freebuild.prefix + "First point set");
+                e.getPlayer().sendMessage(ThemedBuildPlugin.prefix + "First point set");
                 e.setCancelled(true);
             }
             else if(action == Action.RIGHT_CLICK_BLOCK){
                 DBmanager.IncompleteModel.setPoint2(e.getClickedBlock().getLocation());
-                e.getPlayer().sendMessage(Freebuild.prefix + "Second point set");
+                e.getPlayer().sendMessage(ThemedBuildPlugin.prefix + "Second point set");
                 e.setCancelled(true);
             }
         }
@@ -130,5 +128,17 @@ public final class Tool implements Listener{
     }
     public static Material getModelTool() {
         return (modelTool!=null?modelTool:Material.WOODEN_SWORD);
+    }
+
+    public static void setModelTool(Material modelTool) {
+        Tool.modelTool = modelTool;
+    }
+
+    public static void setLiquidTool(Material liquidTool) {
+        Tool.liquidTool = liquidTool;
+    }
+
+    public static void setFireTool(Material fireTool) {
+        Tool.fireTool = fireTool;
     }
 }
