@@ -125,27 +125,25 @@ public class Plot {
     }
 
     private void Generate() {
-        new Thread(() -> {
-            BlockData borderBlockData = Bukkit.createBlockData(Material.STONE_SLAB);
-            ((Slab) borderBlockData).setType(Slab.Type.DOUBLE);
-            for (int x = boundX[0]; x < boundX[1]; x++) {
-                Location lc = new Location(w, x, corner.getBlockY(), boundZ[0]);
-                lc.getBlock().setBlockData(borderBlockData);
-            }
-            for (int x = boundX[0]; x < boundX[1]; x++) {
-                Location lc = new Location(w, x, corner.getBlockY(), boundZ[1]);
-                lc.getBlock().setBlockData(borderBlockData);
-            }
-            for (int z = boundZ[0]; z < boundZ[1]; z++) {
-                Location lc = new Location(w, boundX[0], corner.getBlockY(), z);
-                lc.getBlock().setBlockData(borderBlockData);
-            }
-            for (int z = boundZ[0]; z < boundZ[1]; z++) {
-                Location lc = new Location(w, boundX[1], corner.getBlockY(), z);
-                lc.getBlock().setBlockData(borderBlockData);
-            }
-            new Location(w, boundX[1], corner.getBlockY(), boundZ[1]).getBlock().setBlockData(borderBlockData);
-        }).start();
+        BlockData borderBlockData = Bukkit.createBlockData(Material.STONE_SLAB);
+        ((Slab) borderBlockData).setType(Slab.Type.DOUBLE);
+        for (int x = boundX[0]; x < boundX[1]; x++) {
+            Location lc = new Location(w, x, corner.getBlockY(), boundZ[0]);
+            lc.getBlock().setBlockData(borderBlockData);
+        }
+        for (int x = boundX[0]; x < boundX[1]; x++) {
+            Location lc = new Location(w, x, corner.getBlockY(), boundZ[1]);
+            lc.getBlock().setBlockData(borderBlockData);
+        }
+        for (int z = boundZ[0]; z < boundZ[1]; z++) {
+            Location lc = new Location(w, boundX[0], corner.getBlockY(), z);
+            lc.getBlock().setBlockData(borderBlockData);
+        }
+        for (int z = boundZ[0]; z < boundZ[1]; z++) {
+            Location lc = new Location(w, boundX[1], corner.getBlockY(), z);
+            lc.getBlock().setBlockData(borderBlockData);
+        }
+        new Location(w, boundX[1], corner.getBlockY(), boundZ[1]).getBlock().setBlockData(borderBlockData);
     }
 
     public void assign(Player p) {

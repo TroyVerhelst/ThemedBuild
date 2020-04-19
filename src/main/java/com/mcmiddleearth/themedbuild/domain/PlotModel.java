@@ -110,40 +110,36 @@ public class PlotModel implements IPlotModel {
 
     @Override
     public void generate(Location l, BlockFace direction) {
-        new Thread(() -> {
-            Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
-            Location iter;
-            for (int x = 0; x < sizex; ++x) {
-                for (int y = 0; y < sizey; ++y) {
-                    for (int z = 0; z < sizez; ++z) {
-                        if (direction == BlockFace.SOUTH) {
-                            iter = new Location(corner.getWorld(), corner.getBlockX() + x, corner.getBlockY() + y, corner.getBlockZ() + z);
-                            iter.getBlock().setBlockData(model[x][y][z], false);
-                        } else if (direction == BlockFace.NORTH) {
-                            iter = new Location(corner.getWorld(), corner.getBlockX() + x, corner.getBlockY() + y, corner.getBlockZ() + z);
-                            iter.getBlock().setBlockData(model[sizex - x - 1][y][sizez - z - 1], false);
-                            setOpposite(iter.getBlock());
-                        }
+        Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        Location iter;
+        for (int x = 0; x < sizex; ++x) {
+            for (int y = 0; y < sizey; ++y) {
+                for (int z = 0; z < sizez; ++z) {
+                    if (direction == BlockFace.SOUTH) {
+                        iter = new Location(corner.getWorld(), corner.getBlockX() + x, corner.getBlockY() + y, corner.getBlockZ() + z);
+                        iter.getBlock().setBlockData(model[x][y][z], false);
+                    } else if (direction == BlockFace.NORTH) {
+                        iter = new Location(corner.getWorld(), corner.getBlockX() + x, corner.getBlockY() + y, corner.getBlockZ() + z);
+                        iter.getBlock().setBlockData(model[sizex - x - 1][y][sizez - z - 1], false);
+                        setOpposite(iter.getBlock());
                     }
                 }
             }
-        }).start();
+        }
     }
 
     public static void generateDefaultModel(File out) {
-        new Thread(() -> {
-            try {
-                FileWriter fos = new FileWriter(out);
-                PrintWriter stream = new PrintWriter(fos);
-                stream.println(48);
-                stream.println(0);
-                stream.println(48);
-                stream.close();
-                fos.close();
-            } catch (IOException ex) {
-                Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }).start();
+        try {
+            FileWriter fos = new FileWriter(out);
+            PrintWriter stream = new PrintWriter(fos);
+            stream.println(48);
+            stream.println(0);
+            stream.println(48);
+            stream.close();
+            fos.close();
+        } catch (IOException ex) {
+            Logger.getLogger(PlotModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
