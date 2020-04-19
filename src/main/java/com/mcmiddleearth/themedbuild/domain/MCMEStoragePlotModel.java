@@ -152,30 +152,34 @@ public class MCMEStoragePlotModel implements IStoragePlot, IPlotModel {
             }
         }
     }
-    
+
     @Override
     public void generate(Location l, BlockFace direction) {
-        Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
-        int rotations = (direction.equals(BlockFace.NORTH) ? 0 : 2);
-        try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(nbtData))) {
-            new MCMEPlotFormat().load(corner, rotations, null, in);
-        } catch (IOException | InvalidRestoreDataException ex) {
-            Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        new Thread(() -> {
+            Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+            int rotations = (direction.equals(BlockFace.NORTH) ? 0 : 2);
+            try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(nbtData))) {
+                new MCMEPlotFormat().load(corner, rotations, null, in);
+            } catch (IOException | InvalidRestoreDataException ex) {
+                Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
     }
 
     public static void generateDefaultModel(File out) {
-        try {
-            FileWriter fos = new FileWriter(out);
-            PrintWriter stream = new PrintWriter(fos);
-            stream.println(48);
-            stream.println(0);
-            stream.println(48);
-            stream.close();
-            fos.close();
-        } catch (IOException ex) {
-            Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        new Thread(() -> {
+            try {
+                FileWriter fos = new FileWriter(out);
+                PrintWriter stream = new PrintWriter(fos);
+                stream.println(48);
+                stream.println(0);
+                stream.println(48);
+                stream.close();
+                fos.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
     }
 
     @Override
