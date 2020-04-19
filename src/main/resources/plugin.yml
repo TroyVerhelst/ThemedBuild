@@ -1,5 +1,5 @@
 name: ThemedBuild
-main: com.mcmiddleearth.ThemedBuild.ThemedBuildPlugin
+main: com.mcmiddleearth.themedbuild.ThemedBuildPlugin
 version: ${project.version}
 description: ThemedBuild controler
 softdepend: [bukkit]

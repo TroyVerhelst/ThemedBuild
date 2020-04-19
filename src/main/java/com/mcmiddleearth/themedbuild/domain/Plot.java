@@ -167,25 +167,25 @@ public class Plot {
             DBmanager.plots.put(p.getUniqueId().toString(), ps);
         }
         if (rotation == 1 || rotation == 4) {
-            new Location(w, corner.getBlockX() + 1, corner.getBlockY() + 1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
+            new Location(w, corner.getBlockX() + 1, corner.getBlockY() + 1, corner.getBlockZ()).getBlock().setType(Material.GOLD_ORE);
             if (rotation == 1) {
                 plotsign = new Location(w, corner.getBlockX() + 1, corner.getBlockY() + 1, corner.getBlockZ() - 1).getBlock();
-                plotsign.setType(Material.LEGACY_WALL_SIGN);
+                plotsign.setType(Material.OAK_WALL_SIGN);
             } else if (rotation == 4) {
                 plotsign = new Location(w, corner.getBlockX() + 1, corner.getBlockY() + 1, corner.getBlockZ() + 1).getBlock();
-                plotsign.setType(Material.LEGACY_WALL_SIGN);
+                plotsign.setType(Material.OAK_WALL_SIGN);
             }
         } else if (rotation == 2 || rotation == 3) {
-            new Location(w, corner.getBlockX() - 1, corner.getBlockY() + 1, corner.getBlockZ()).getBlock().setType(Material.DIAMOND_BLOCK);
+            new Location(w, corner.getBlockX() - 1, corner.getBlockY() + 1, corner.getBlockZ()).getBlock().setType(Material.GOLD_ORE);
             if (rotation == 2) {
                 plotsign = new Location(w, corner.getBlockX() - 1, corner.getBlockY() + 1, corner.getBlockZ() - 1).getBlock();
-                plotsign.setType(Material.LEGACY_WALL_SIGN);
+                plotsign.setType(Material.OAK_WALL_SIGN);
             } else if (rotation == 3) {
                 plotsign = new Location(w, corner.getBlockX() - 1, corner.getBlockY() + 1, corner.getBlockZ() + 1).getBlock();
-                plotsign.setType(Material.LEGACY_WALL_SIGN);
+                plotsign.setType(Material.OAK_WALL_SIGN);
             }
         }
-        WallSign plotSign = (WallSign) Bukkit.createBlockData(Material.LEGACY_WALL_SIGN);
+        WallSign plotSign = (WallSign) Bukkit.createBlockData(Material.OAK_WALL_SIGN);
         if (rotation == 1 || rotation == 2) {
             plotSign.setFacing(BlockFace.NORTH);
         } else {

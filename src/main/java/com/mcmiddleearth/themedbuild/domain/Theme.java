@@ -24,13 +24,12 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Fence;
-import org.bukkit.material.Sandstone;
-import org.bukkit.material.Stairs;
 
 import java.util.ArrayList;
+import org.bukkit.block.data.type.Sign;
+import org.bukkit.block.data.type.Stairs;
 
 /**
  * @author Donovan, Ivan1pl
@@ -85,19 +84,19 @@ public class Theme {
             l.add(3, 1, 0);
         }
         Block sign = l.getBlock();
-        sign.setType(Material.LEGACY_SIGN);
-        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.LEGACY_SIGN);
-        s.setFacingDirection(face);
-        sign.setType(Material.LEGACY_SIGN);
-        Sign plotSign = (Sign) sign.getState();
-        plotSign.setData(s);
+        sign.setType(Material.OAK_SIGN);
+        Sign s = (Sign) sign.getBlockData();
+        s.setRotation(face);
+        sign.setType(Material.OAK_SIGN);
+        org.bukkit.block.Sign plotSign = (org.bukkit.block.Sign) sign.getState();
+        plotSign.setBlockData(s);
         plotSign.setLine(0, ChatColor.BOLD + "Main");
         plotSign.setLine(1, ChatColor.BOLD + "ThemedBuild");
         plotSign.setLine(2, theme);
         if (theme.length() > 15) {
             plotSign.setLine(3, theme.substring(15));
         }
-        plotSign.update();
+        plotSign.update(true,false);
     }
 
     private void Generate() {
@@ -109,26 +108,21 @@ public class Theme {
             for (int x = loc.getBlockX() - 1; x < loc.getBlockX() + 2; x++) {
                 Location lc = new Location(loc.getWorld(), x, loc.getBlockY(), z);
                 lc.getBlock().setType(Material.SANDSTONE);
-                state = lc.getBlock().getState();
-                Sandstone ss = (Sandstone) state.getData();
-                ss.setType(SandstoneType.CRACKED);
-                state.setData(ss);
-                state.update(true);
             }
             Location lc = new Location(loc.getWorld(), loc.getBlockX() - 2, loc.getBlockY(), z);
             lc.getBlock().setType(Material.BRICK_STAIRS);
             state = lc.getBlock().getState();
-            stairs = (Stairs) state.getData();
-            stairs.setFacingDirection(BlockFace.WEST);
-            state.setData(stairs);
-            state.update(true);
+            stairs = (Stairs) state.getBlockData();
+            stairs.setFacing(BlockFace.WEST);
+            state.setBlockData(stairs);
+            state.update(true,false);
             lc = new Location(loc.getWorld(), loc.getBlockX() + 2, loc.getBlockY(), z);
             lc.getBlock().setType(Material.BRICK_STAIRS);
             state = lc.getBlock().getState();
-            stairs = (Stairs) state.getData();
-            stairs.setFacingDirection(BlockFace.EAST);
-            state.setData(stairs);
-            state.update(true);
+            stairs = (Stairs) state.getBlockData();
+            stairs.setFacing(BlockFace.EAST);
+            state.setBlockData(stairs);
+            state.update(true,false);
         }
         genSign(BlockFace.EAST);
         genSign(BlockFace.WEST);
@@ -155,7 +149,7 @@ public class Theme {
         new Location(w, x, y + 2, z + 1).getBlock().setBlockData(north, false);
         new Location(w, x, y + 2, z).getBlock().setBlockData(both, false);
         new Location(w, x, y + 2, z - 1).getBlock().setBlockData(south, false);
-        BlockData data = Bukkit.createBlockData(Material.LEGACY_WALL_SIGN);
+        BlockData data = Bukkit.createBlockData(Material.OAK_WALL_SIGN);
         Block sign;
         org.bukkit.block.data.type.WallSign s = (org.bukkit.block.data.type.WallSign) data;
         s.setFacing(direction);
@@ -169,8 +163,8 @@ public class Theme {
             default:
                 return;
         }
-        sign.setType(Material.LEGACY_WALL_SIGN);
-        Sign plotSign = (Sign) sign.getState();
+        sign.setType(Material.OAK_WALL_SIGN);
+        org.bukkit.block.Sign plotSign = (org.bukkit.block.Sign) sign.getState();
         plotSign.setBlockData(s);
         //plotSign.setData(s);
         plotSign.setLine(0, "");
@@ -196,7 +190,6 @@ public class Theme {
         int sizex = DBmanager.currModel.getSizex() + 1;
         int sizez = DBmanager.currModel.getSizez() + 1;
         if (first) {
-//            Bukkit.getServer().broadcastMessage("1");
             p1 = new Plot(new Location(cent.getWorld(), cent.getBlockX() + 3, cent.getBlockY() + 1, cent.getBlockZ() + 3), 1, sizex, sizez);
             p2 = new Plot(new Location(cent.getWorld(), cent.getBlockX() - 3, cent.getBlockY() + 1, cent.getBlockZ() + 3), 2, sizex, sizez);
             p3 = new Plot(new Location(cent.getWorld(), cent.getBlockX() + 3, cent.getBlockY() + 1, cent.getBlockZ() - 3), 4, sizex, sizez);
@@ -224,53 +217,43 @@ public class Theme {
             for (int x = p1.getCorner().getBlockX() - 1; x < p1.getCorner().getBlockX() + sizex + 4; x++) {
                 Location tmp = new Location(cent.getWorld(), x, cent.getBlockY(), z);
                 tmp.getBlock().setType(Material.SANDSTONE);
-                state = tmp.getBlock().getState();
-                Sandstone ss = (Sandstone) state.getData();
-                ss.setType(SandstoneType.CRACKED);
-                state.setData(ss);
-                state.update(true);
             }
             for (int x = p2.getCorner().getBlockX() + 1; x > p2.getCorner().getBlockX() - sizex - 4; x--) {
                 Location tmp = new Location(cent.getWorld(), x, cent.getBlockY(), z);
                 tmp.getBlock().setType(Material.SANDSTONE);
-                state = tmp.getBlock().getState();
-                Sandstone ss = (Sandstone) state.getData();
-                ss.setType(SandstoneType.CRACKED);
-                state.setData(ss);
-                state.update(true);
             }
         }
         for (int x = p1.getCorner().getBlockX() - 1; x < p1.getCorner().getBlockX() + sizex + 4; x++) {
             b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() - 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
-            stairs = (Stairs) state.getData();
-            stairs.setFacingDirection(BlockFace.NORTH);
-            state.setData(stairs);
-            state.update(true);
+            stairs = (Stairs) state.getBlockData();
+            stairs.setFacing(BlockFace.NORTH);
+            state.setBlockData(stairs);
+            state.update(true,false);
             b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() + 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
-            stairs = (Stairs) state.getData();
-            stairs.setFacingDirection(BlockFace.SOUTH);
-            state.setData(stairs);
-            state.update(true);
+            stairs = (Stairs) state.getBlockData();
+            stairs.setFacing(BlockFace.SOUTH);
+            state.setBlockData(stairs);
+            state.update(true,false);
         }
         for (int x = p2.getCorner().getBlockX() + 1; x > p2.getCorner().getBlockX() - sizex - 4; x--) {
             b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() - 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
-            stairs = (Stairs) state.getData();
-            stairs.setFacingDirection(BlockFace.NORTH);
-            state.setData(stairs);
-            state.update(true);
+            stairs = (Stairs) state.getBlockData();
+            stairs.setFacing(BlockFace.NORTH);
+            state.setBlockData(stairs);
+            state.update(true,false);
             b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() + 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
-            stairs = (Stairs) state.getData();
-            stairs.setFacingDirection(BlockFace.SOUTH);
-            state.setData(stairs);
-            state.update(true);
+            stairs = (Stairs) state.getBlockData();
+            stairs.setFacing(BlockFace.SOUTH);
+            state.setBlockData(stairs);
+            state.update(true,false);
         }
     }
 
