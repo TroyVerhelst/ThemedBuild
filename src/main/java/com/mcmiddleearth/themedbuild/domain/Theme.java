@@ -1,33 +1,26 @@
 /*
- * This file is part of Freebuild.
- * 
- * Freebuild is free software: you can redistribute it and/or modify
+ * This file is part of ThemedBuild.
+ *
+ * ThemedBuild is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
- * Freebuild is distributed in the hope that it will be useful,
+ *
+ * ThemedBuild is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with Freebuild.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * 
+ * along with ThemedBuild.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
  */
 
-package com.mcmiddleearth.freebuild;
+package com.mcmiddleearth.themedbuild.domain;
 
-import java.util.ArrayList;
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SandstoneType;
-import org.bukkit.World;
+import com.mcmiddleearth.themedbuild.ThemedBuildPlugin;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -37,83 +30,83 @@ import org.bukkit.block.data.type.Fence;
 import org.bukkit.material.Sandstone;
 import org.bukkit.material.Stairs;
 
+import java.util.ArrayList;
+
 /**
- *
  * @author Donovan, Ivan1pl
  */
 public class Theme {
-    @Getter
     private String theme;
-    @Getter
     private Location cent;
-    @Getter
+
     private ArrayList<Plot> plots = new ArrayList<>();
-    @Getter
     private ArrayList<Plot> currplots = new ArrayList<>();
-    @Getter
+
     private int x_left;
-    @Getter
     private int x_right;
-    @Getter
+
     private String model;
-    @Getter @Setter
+
     private String URL = "null";
-    
-    public Theme(String name, String url, String model, World w){
+
+    public Theme(String name, String url, String model, World w) {
         int sizez = DBmanager.currModel.getSizez();
         int sizez2 = (DBmanager.curr != null ? DBmanager.curr.plots.get(0).getSizeZ() : 0);
         this.theme = name;
         this.model = model;
         Location ocent = (DBmanager.curr != null ? DBmanager.curr.getCent().clone() : w.getSpawnLocation().clone());
-        ocent.add(0, 0, sizez+sizez2+13);
-        this.cent=ocent;
+        ocent.add(0, 0, sizez + sizez2 + 13);
+        this.cent = ocent;
         this.Generate();
     }
-    public Theme(String name, String url, Location loc, String model){
+
+    public Theme(String name, String url, Location loc, String model) {
         this.theme = name;
         this.model = model;
-        this.cent = loc.add(0 , -1, 0);
+        this.cent = loc.add(0, -1, 0);
         this.Generate();
     }
-    public Theme(String name, Location loc, ArrayList<Plot> plotz, ArrayList<Plot> currs, int xl, int xr, String model){
+
+    public Theme(String name, Location loc, ArrayList<Plot> plotz, ArrayList<Plot> currs, int xl, int xr, String model) {
         this.theme = name;
         this.model = model;
-        this.cent = loc.add(0 , -1, 0);
+        this.cent = loc.add(0, -1, 0);
         this.plots.addAll(plotz);
         this.currplots.addAll(currs);
         this.x_left = xl;
         this.x_right = xr;
     }
-    private void genSign(BlockFace face){
+
+    private void genSign(BlockFace face) {
         Location l = getCent().clone();
-        if(face == BlockFace.EAST){
+        if (face == BlockFace.EAST) {
             l.subtract(3, -1, 0);
-        }
-        else if(face == BlockFace.WEST){
+        } else if (face == BlockFace.WEST) {
             l.add(3, 1, 0);
         }
         Block sign = l.getBlock();
-        sign.setType(Material.SIGN);
-        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.SIGN);
+        sign.setType(Material.LEGACY_SIGN);
+        org.bukkit.material.Sign s = new org.bukkit.material.Sign(Material.LEGACY_SIGN);
         s.setFacingDirection(face);
-        sign.setType(Material.SIGN);
+        sign.setType(Material.LEGACY_SIGN);
         Sign plotSign = (Sign) sign.getState();
         plotSign.setData(s);
         plotSign.setLine(0, ChatColor.BOLD + "Main");
         plotSign.setLine(1, ChatColor.BOLD + "ThemedBuild");
         plotSign.setLine(2, theme);
-        if(theme.length() > 15) {
+        if (theme.length() > 15) {
             plotSign.setLine(3, theme.substring(15));
         }
         plotSign.update();
     }
-    private void Generate(){
-        int sizez = DBmanager.currModel.getSizez()+1;
+
+    private void Generate() {
+        int sizez = DBmanager.currModel.getSizez() + 1;
         Location loc = cent;
         BlockState state;
         Stairs stairs;
-        for(int z = loc.getBlockZ()-sizez-6; z<loc.getBlockZ()+sizez+7; z++){
-            for(int x = loc.getBlockX()-1; x<loc.getBlockX() + 2; x++){
+        for (int z = loc.getBlockZ() - sizez - 6; z < loc.getBlockZ() + sizez + 7; z++) {
+            for (int x = loc.getBlockX() - 1; x < loc.getBlockX() + 2; x++) {
                 Location lc = new Location(loc.getWorld(), x, loc.getBlockY(), z);
                 lc.getBlock().setType(Material.SANDSTONE);
                 state = lc.getBlock().getState();
@@ -122,14 +115,14 @@ public class Theme {
                 state.setData(ss);
                 state.update(true);
             }
-            Location lc = new Location(loc.getWorld(), loc.getBlockX()-2, loc.getBlockY(), z);
+            Location lc = new Location(loc.getWorld(), loc.getBlockX() - 2, loc.getBlockY(), z);
             lc.getBlock().setType(Material.BRICK_STAIRS);
             state = lc.getBlock().getState();
             stairs = (Stairs) state.getData();
             stairs.setFacingDirection(BlockFace.WEST);
             state.setData(stairs);
             state.update(true);
-            lc = new Location(loc.getWorld(), loc.getBlockX()+2, loc.getBlockY(), z);
+            lc = new Location(loc.getWorld(), loc.getBlockX() + 2, loc.getBlockY(), z);
             lc.getBlock().setType(Material.BRICK_STAIRS);
             state = lc.getBlock().getState();
             stairs = (Stairs) state.getData();
@@ -141,7 +134,8 @@ public class Theme {
         genSign(BlockFace.WEST);
         this.genPlots(true);
     }
-    private void genGate(World w, int x, int y, int z, BlockFace direction){
+
+    private void genGate(World w, int x, int y, int z, BlockFace direction) {
         Fence both = (Fence) Bukkit.createBlockData(Material.OAK_FENCE);
         both.setFace(BlockFace.NORTH, true);
         both.setFace(BlockFace.SOUTH, true);
@@ -150,46 +144,48 @@ public class Theme {
         north.setFace(BlockFace.NORTH, true);
         Fence south = (Fence) Bukkit.createBlockData(Material.OAK_FENCE);
         south.setFace(BlockFace.SOUTH, true);
-        new Location(w,x,y,z+1).getBlock().setBlockData(south,false);
-        new Location(w,x,y,z+2).getBlock().setBlockData(north,false);
-        new Location(w,x,y+1,z+1).getBlock().setBlockData(south,false);
-        new Location(w,x,y+1,z+2).getBlock().setBlockData(north,false);
-        new Location(w,x,y,z-1).getBlock().setBlockData(north,false);
-        new Location(w,x,y,z-2).getBlock().setBlockData(south,false);
-        new Location(w,x,y+1,z-1).getBlock().setBlockData(north,false);
-        new Location(w,x,y+1,z-2).getBlock().setBlockData(south,false);
-        new Location(w,x,y+2,z+1).getBlock().setBlockData(north,false);
-        new Location(w,x,y+2,z).getBlock().setBlockData(both,false);
-        new Location(w,x,y+2,z-1).getBlock().setBlockData(south,false);
-        BlockData data = Bukkit.createBlockData(Material.WALL_SIGN);
+        new Location(w, x, y, z + 1).getBlock().setBlockData(south, false);
+        new Location(w, x, y, z + 2).getBlock().setBlockData(north, false);
+        new Location(w, x, y + 1, z + 1).getBlock().setBlockData(south, false);
+        new Location(w, x, y + 1, z + 2).getBlock().setBlockData(north, false);
+        new Location(w, x, y, z - 1).getBlock().setBlockData(north, false);
+        new Location(w, x, y, z - 2).getBlock().setBlockData(south, false);
+        new Location(w, x, y + 1, z - 1).getBlock().setBlockData(north, false);
+        new Location(w, x, y + 1, z - 2).getBlock().setBlockData(south, false);
+        new Location(w, x, y + 2, z + 1).getBlock().setBlockData(north, false);
+        new Location(w, x, y + 2, z).getBlock().setBlockData(both, false);
+        new Location(w, x, y + 2, z - 1).getBlock().setBlockData(south, false);
+        BlockData data = Bukkit.createBlockData(Material.LEGACY_WALL_SIGN);
         Block sign;
         org.bukkit.block.data.type.WallSign s = (org.bukkit.block.data.type.WallSign) data;
         s.setFacing(direction);
         switch (direction) {
             case EAST:
-                sign = new Location(w,x+1,y+2,z).getBlock();
+                sign = new Location(w, x + 1, y + 2, z).getBlock();
                 break;
             case WEST:
-                sign = new Location(w,x-1,y+2,z).getBlock();
+                sign = new Location(w, x - 1, y + 2, z).getBlock();
                 break;
             default:
                 return;
         }
-        sign.setType(Material.WALL_SIGN);
+        sign.setType(Material.LEGACY_WALL_SIGN);
         Sign plotSign = (Sign) sign.getState();
         plotSign.setBlockData(s);
         //plotSign.setData(s);
         plotSign.setLine(0, "");
-        plotSign.setLine(1, ""+ChatColor.RED + ChatColor.BOLD + "Closed");
+        plotSign.setLine(1, "" + ChatColor.RED + ChatColor.BOLD + "Closed");
         plotSign.update(true, false);
     }
-    public void close(){
-        genGate(getCent().getWorld(), getCent().getBlockX()-3, getCent().getBlockY()+1, getCent().getBlockZ(), BlockFace.EAST);
-        genGate(getCent().getWorld(), getCent().getBlockX()+3, getCent().getBlockY()+1, getCent().getBlockZ(), BlockFace.WEST);
+
+    public void close() {
+        genGate(getCent().getWorld(), getCent().getBlockX() - 3, getCent().getBlockY() + 1, getCent().getBlockZ(), BlockFace.EAST);
+        genGate(getCent().getWorld(), getCent().getBlockX() + 3, getCent().getBlockY() + 1, getCent().getBlockZ(), BlockFace.WEST);
         DBmanager.save();
     }
-    public void genPlots(boolean first){
-        Bukkit.getServer().broadcastMessage(Freebuild.prefix + "Generating new plots, Lag incoming");
+
+    public void genPlots(boolean first) {
+        Bukkit.getServer().broadcastMessage(ThemedBuildPlugin.prefix + "Generating new plots, Lag incoming");
         Plot p1;
         Plot p2;
         Plot p3;
@@ -197,23 +193,23 @@ public class Theme {
         Block b;
         BlockState state;
         Stairs stairs;
-        int sizex = DBmanager.currModel.getSizex()+1;
-        int sizez = DBmanager.currModel.getSizez()+1;
-        if(first){
+        int sizex = DBmanager.currModel.getSizex() + 1;
+        int sizez = DBmanager.currModel.getSizez() + 1;
+        if (first) {
 //            Bukkit.getServer().broadcastMessage("1");
-            p1 = new Plot(new Location(cent.getWorld(), cent.getBlockX()+3, cent.getBlockY()+1, cent.getBlockZ()+3), 1, sizex, sizez);
-            p2 = new Plot(new Location(cent.getWorld(), cent.getBlockX()-3, cent.getBlockY()+1, cent.getBlockZ()+3), 2, sizex, sizez);
-            p3 = new Plot(new Location(cent.getWorld(), cent.getBlockX()+3, cent.getBlockY()+1, cent.getBlockZ()-3), 4, sizex, sizez);
-            p4 = new Plot(new Location(cent.getWorld(), cent.getBlockX()-3, cent.getBlockY()+1, cent.getBlockZ()-3), 3, sizex, sizez);
-            this.x_left = cent.getBlockX()+3;
-            this.x_right = cent.getBlockX()-3;
-        }else{
+            p1 = new Plot(new Location(cent.getWorld(), cent.getBlockX() + 3, cent.getBlockY() + 1, cent.getBlockZ() + 3), 1, sizex, sizez);
+            p2 = new Plot(new Location(cent.getWorld(), cent.getBlockX() - 3, cent.getBlockY() + 1, cent.getBlockZ() + 3), 2, sizex, sizez);
+            p3 = new Plot(new Location(cent.getWorld(), cent.getBlockX() + 3, cent.getBlockY() + 1, cent.getBlockZ() - 3), 4, sizex, sizez);
+            p4 = new Plot(new Location(cent.getWorld(), cent.getBlockX() - 3, cent.getBlockY() + 1, cent.getBlockZ() - 3), 3, sizex, sizez);
+            this.x_left = cent.getBlockX() + 3;
+            this.x_right = cent.getBlockX() - 3;
+        } else {
             this.x_left += (sizex + 5);
             this.x_right -= (sizex + 5);
-            p1 = new Plot(new Location(cent.getWorld(), this.x_left, cent.getBlockY()+1, cent.getBlockZ()+3), 1, sizex, sizez);
-            p2 = new Plot(new Location(cent.getWorld(), this.x_right, cent.getBlockY()+1, cent.getBlockZ()+3), 2, sizex, sizez);
-            p3 = new Plot(new Location(cent.getWorld(), this.x_left, cent.getBlockY()+1, cent.getBlockZ()-3), 4, sizex, sizez);
-            p4 = new Plot(new Location(cent.getWorld(), this.x_right, cent.getBlockY()+1, cent.getBlockZ()-3), 3, sizex, sizez);
+            p1 = new Plot(new Location(cent.getWorld(), this.x_left, cent.getBlockY() + 1, cent.getBlockZ() + 3), 1, sizex, sizez);
+            p2 = new Plot(new Location(cent.getWorld(), this.x_right, cent.getBlockY() + 1, cent.getBlockZ() + 3), 2, sizex, sizez);
+            p3 = new Plot(new Location(cent.getWorld(), this.x_left, cent.getBlockY() + 1, cent.getBlockZ() - 3), 4, sizex, sizez);
+            p4 = new Plot(new Location(cent.getWorld(), this.x_right, cent.getBlockY() + 1, cent.getBlockZ() - 3), 3, sizex, sizez);
         }
         currplots.clear();
         currplots.add(p1);
@@ -224,8 +220,8 @@ public class Theme {
         plots.add(p2);
         plots.add(p3);
         plots.add(p4);
-        for(int z = cent.getBlockZ()-1; z<cent.getBlockZ()+2; z++){
-            for(int x = p1.getCorner().getBlockX()-1; x<p1.getCorner().getBlockX()+sizex+4; x++){
+        for (int z = cent.getBlockZ() - 1; z < cent.getBlockZ() + 2; z++) {
+            for (int x = p1.getCorner().getBlockX() - 1; x < p1.getCorner().getBlockX() + sizex + 4; x++) {
                 Location tmp = new Location(cent.getWorld(), x, cent.getBlockY(), z);
                 tmp.getBlock().setType(Material.SANDSTONE);
                 state = tmp.getBlock().getState();
@@ -234,7 +230,7 @@ public class Theme {
                 state.setData(ss);
                 state.update(true);
             }
-            for(int x = p2.getCorner().getBlockX()+1; x>p2.getCorner().getBlockX()-sizex-4; x--){
+            for (int x = p2.getCorner().getBlockX() + 1; x > p2.getCorner().getBlockX() - sizex - 4; x--) {
                 Location tmp = new Location(cent.getWorld(), x, cent.getBlockY(), z);
                 tmp.getBlock().setType(Material.SANDSTONE);
                 state = tmp.getBlock().getState();
@@ -244,15 +240,15 @@ public class Theme {
                 state.update(true);
             }
         }
-        for(int x = p1.getCorner().getBlockX()-1; x<p1.getCorner().getBlockX()+sizex+4; x++){
-            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()-2).getBlock();
+        for (int x = p1.getCorner().getBlockX() - 1; x < p1.getCorner().getBlockX() + sizex + 4; x++) {
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() - 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
             stairs = (Stairs) state.getData();
             stairs.setFacingDirection(BlockFace.NORTH);
             state.setData(stairs);
             state.update(true);
-            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()+2).getBlock();
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() + 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
             stairs = (Stairs) state.getData();
@@ -260,15 +256,15 @@ public class Theme {
             state.setData(stairs);
             state.update(true);
         }
-        for(int x = p2.getCorner().getBlockX()+1; x>p2.getCorner().getBlockX()-sizex-4; x--){
-            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()-2).getBlock();
+        for (int x = p2.getCorner().getBlockX() + 1; x > p2.getCorner().getBlockX() - sizex - 4; x--) {
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() - 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
             stairs = (Stairs) state.getData();
             stairs.setFacingDirection(BlockFace.NORTH);
             state.setData(stairs);
             state.update(true);
-            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ()+2).getBlock();
+            b = new Location(cent.getWorld(), x, cent.getBlockY(), cent.getBlockZ() + 2).getBlock();
             b.setType(Material.BRICK_STAIRS);
             state = b.getState();
             stairs = (Stairs) state.getData();
@@ -276,5 +272,41 @@ public class Theme {
             state.setData(stairs);
             state.update(true);
         }
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public Location getCent() {
+        return cent;
+    }
+
+    public ArrayList<Plot> getPlots() {
+        return plots;
+    }
+
+    public ArrayList<Plot> getCurrplots() {
+        return currplots;
+    }
+
+    public int getX_left() {
+        return x_left;
+    }
+
+    public int getX_right() {
+        return x_right;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+
+    public void setURL(String URL) {
+        this.URL = URL;
     }
 }

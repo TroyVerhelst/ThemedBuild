@@ -1,33 +1,35 @@
-name: Freebuild
-main: com.mcmiddleearth.freebuild.Freebuild
+name: ThemedBuild
+main: com.mcmiddleearth.ThemedBuild.ThemedBuildPlugin
 version: ${project.version}
-description: Freebuild controler
-api-version: 1.13
+description: ThemedBuild controler
+softdepend: [bukkit]
+depend: [PluginUtils]
+api-version: 1.15
 commands:
   theme:
     description: new plot(s)
     usage: |
-        §2/theme§f -- claim a plot in current Themed Build
-        
-        Available subcommands:
-        §2/theme toplot§f -- teleports you to your plot in current theme
-        §2/theme warp§f -- teleports you to the current theme
-        §2/theme resetplot§f -- restores plot to original state
-        §2/theme unclaim§f -- unclaims a plot
-        §2/theme help [subcommand]§f -- view more informations about subcommand
-        §2/theme new <name>§f -- create new Themed Build
-        §2/theme set <name>§f -- start new chain of Themed Builds
-        §2/theme createmodel <name>§f -- create empty plot model
-        §2/theme modelpos <1|2>§f -- set point at feet coordinates
-        §2/theme deletemodel <name>§f -- delete plot model
-        §2/theme savemodel§f -- save current model
-        §2/theme listmodels§f -- list available models
-        §2/theme setURL <url>§f -- set the URL for the themedbuild
+      §2/theme§f -- claim a plot in current Themed Build
+
+      Available subcommands:
+      §2/theme toplot§f -- teleports you to your plot in current theme
+      §2/theme warp§f -- teleports you to the current theme
+      §2/theme resetplot§f -- restores plot to original state
+      §2/theme unclaim§f -- unclaims a plot
+      §2/theme help [subcommand]§f -- view more informations about subcommand
+      §2/theme new <name>§f -- create new Themed Build
+      §2/theme set <name>§f -- start new chain of Themed Builds
+      §2/theme createmodel <name>§f -- create empty plot model
+      §2/theme modelpos <1|2>§f -- set point at feet coordinates
+      §2/theme deletemodel <name>§f -- delete plot model
+      §2/theme savemodel§f -- save current model
+      §2/theme listmodels§f -- list available models
+      §2/theme setURL <url>§f -- set the URL for the themedbuild
 permissions:
   plotmanager.create:
     default: op
     children:
-        plotmanager.build: true
+      plotmanager.build: true
   plotmanager.build:
     default: false
     
