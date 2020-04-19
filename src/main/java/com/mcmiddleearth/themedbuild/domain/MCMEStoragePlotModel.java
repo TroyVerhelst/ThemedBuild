@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * @author Ivan1pl, Eriol_Eandur
@@ -155,13 +156,18 @@ public class MCMEStoragePlotModel implements IStoragePlot, IPlotModel {
 
     @Override
     public void generate(Location l, BlockFace direction) {
-        Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
-        int rotations = (direction.equals(BlockFace.NORTH) ? 0 : 2);
-        try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(nbtData))) {
-            new MCMEPlotFormat().load(corner, rotations, null, in);
-        } catch (IOException | InvalidRestoreDataException ex) {
-            Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        final Location corner = new Location(l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        final int rotations = (direction.equals(BlockFace.NORTH)?0:2);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try(DataInputStream in = new DataInputStream(new ByteArrayInputStream(nbtData))) {
+                    new MCMEPlotFormat().load(corner, rotations, null, in);
+                } catch (IOException | InvalidRestoreDataException ex) {
+                    Logger.getLogger(MCMEStoragePlotModel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }.runTaskLater(ThemedBuildPlugin.getPluginInstance(),15);
     }
 
     public static void generateDefaultModel(File out) {
