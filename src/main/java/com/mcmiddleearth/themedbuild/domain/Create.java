@@ -23,6 +23,7 @@ import java.util.*;
 
 import com.mcmiddleearth.themedbuild.ThemedBuildPlugin;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -72,6 +73,7 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                 for(Plot plot : DBmanager.curr.getCurrplots()){
                     if(!plot.isAssigned()){
                         plot.assign(p);
+                        p.setGameMode(GameMode.CREATIVE);
                         p.sendMessage(ThemedBuildPlugin.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         if(!DBmanager.curr.getURL().equals("null"))
                         {
