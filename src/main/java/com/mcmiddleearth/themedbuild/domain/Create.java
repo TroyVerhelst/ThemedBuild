@@ -20,6 +20,7 @@
 package com.mcmiddleearth.themedbuild.domain;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import com.mcmiddleearth.themedbuild.ThemedBuildPlugin;
 import org.bukkit.ChatColor;
@@ -69,11 +70,15 @@ public class Create implements CommandExecutor, ConversationAbandonedListener{
                     p.sendMessage(ThemedBuildPlugin.prefix + "You reached maximum number of plots");
                     return true;
                 }
+                if(DBmanager.curr == null) {
+                    p.sendMessage("There is no current theme.");
+                    return true;
+                }
                 //move the player and gen new plot
                 for(Plot plot : DBmanager.curr.getCurrplots()){
                     if(!plot.isAssigned()){
                         plot.assign(p);
-                        p.setGameMode(GameMode.CREATIVE);
+                        //p.setGameMode(GameMode.CREATIVE);
                         p.sendMessage(ThemedBuildPlugin.prefix + "Welcome to a new plot, the current theme is " + DBmanager.curr.getTheme());
                         if(!DBmanager.curr.getURL().equals("null"))
                         {

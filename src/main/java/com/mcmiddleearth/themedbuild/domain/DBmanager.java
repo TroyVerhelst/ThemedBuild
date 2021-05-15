@@ -192,7 +192,7 @@ public class DBmanager implements Listener{
             String name = f.getName().replace("_", " ");
             name = name.replace(".MCtheme", "");
             try {
-                String curr1 = ThemedBuildPlugin.getPluginInstance().getConfig().getString("currTheme");
+                String curr1 = ThemedBuildPlugin.getPluginInstance().getConfig().getString("currTheme").replace("_", " ");
                 boolean isCurrent = name.equalsIgnoreCase(curr1);
                 Scanner s;
                 s = new Scanner(f);
